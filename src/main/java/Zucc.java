@@ -32,11 +32,10 @@ public class Zucc {
      * Formats the stored tasks as a one-based numbered list.
      *
      * @param tasks array containing the stored tasks
-     * @param isTaskDone completion status corresponding to each stored task
      * @param taskCount number of tasks currently stored
      * @return all stored tasks, one per line
      */
-    private static String formatTasks(String[] tasks, boolean[] isTaskDone, int taskCount) {
+    private static String formatTasks(Task[] tasks, int taskCount) {
         StringBuilder taskList = new StringBuilder();
 
         for (int i = 0; i < taskCount; i++) {
@@ -45,21 +44,10 @@ public class Zucc {
             }
             taskList.append(i + 1)
                     .append('.')
-                    .append(formatTask(tasks[i], isTaskDone[i]));
+                    .append(tasks[i]);
         }
 
         return taskList.toString();
-    }
-
-    /**
-     * Formats one task with a checkbox that shows whether it is done.
-     *
-     * @param task description of the task
-     * @param isDone whether the task has been completed
-     * @return the task prefixed by its completion status
-     */
-    private static String formatTask(String task, boolean isDone) {
-        return (isDone ? "[X] " : "[ ] ") + task;
     }
 
     /**
@@ -83,8 +71,7 @@ public class Zucc {
         printResponse(greeting);
 
         // TODO: Handle attempts to add more than MAX_TASKS tasks.
-        String[] tasks = new String[MAX_TASKS];
-        boolean[] isTaskDone = new boolean[MAX_TASKS];
+        Task[] tasks = new Task[MAX_TASKS];
         int taskCount = 0;
 
         try (Scanner scanner = new Scanner(System.in)) {
@@ -97,7 +84,7 @@ public class Zucc {
                 }
 
                 if (command.equals("list")) {
-                    String taskList = formatTasks(tasks, isTaskDone, taskCount);
+                    String taskList = formatTasks(tasks, taskCount);
                     printResponse("Here are the tasks in your list:\n" + taskList);
                     continue;
                 }
@@ -105,24 +92,22 @@ public class Zucc {
                 if (command.startsWith("mark ")) {
                     // TODO: Validate that the mark command contains a valid one-based task index.
                     int taskIndex = Integer.parseInt(command.substring("mark ".length())) - 1;
-                    // TODO: Validate that the task is not already marked as done.
-                    isTaskDone[taskIndex] = true;
+                    tasks[taskIndex].markAsDone();
                     printResponse("Nice! I've marked this task as done:\n  "
-                            + formatTask(tasks[taskIndex], isTaskDone[taskIndex]));
+                            + tasks[taskIndex]);
                     continue;
                 }
 
                 if (command.startsWith("unmark ")) {
                     // TODO: Validate that the unmark command contains a valid one-based task index.
                     int taskIndex = Integer.parseInt(command.substring("unmark ".length())) - 1;
-                    // TODO: Validate that the task is currently marked as done.
-                    isTaskDone[taskIndex] = false;
+                    tasks[taskIndex].markAsNotDone();
                     printResponse("OK, I've marked this task as not done yet:\n  "
-                            + formatTask(tasks[taskIndex], isTaskDone[taskIndex]));
+                            + tasks[taskIndex]);
                     continue;
                 }
 
-                tasks[taskCount] = command;
+                tasks[taskCount] = new Task(command);
                 taskCount++;
                 printResponse("added: " + command);
             }
