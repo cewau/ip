@@ -4,6 +4,9 @@ import java.util.Scanner;
  * Starts the Zucc chatbot application.
  */
 public class Zucc {
+    /** Maximum number of tasks that can be stored during one run. */
+    private static final int MAX_TASKS = 100;
+
     /** A visual separator used to frame the chatbot's messages. */
     private static final String SEPARATOR = "____________________________________________________________";
 
@@ -26,7 +29,28 @@ public class Zucc {
     }
 
     /**
-     * Greets the user, echoes commands, and exits when the user enters {@code bye}.
+     * Formats the stored tasks as a one-based numbered list.
+     *
+     * @param tasks array containing the stored tasks
+     * @param taskCount number of tasks currently stored
+     * @return all stored tasks, one per line
+     */
+    private static String formatTasks(String[] tasks, int taskCount) {
+        StringBuilder taskList = new StringBuilder();
+
+        for (int i = 0; i < taskCount; i++) {
+            if (i > 0) {
+                taskList.append('\n');
+            }
+            taskList.append(i + 1).append(". ").append(tasks[i]);
+        }
+
+        return taskList.toString();
+    }
+
+    /**
+     * Greets the user, stores tasks, lists them on request, and exits when the
+     * user enters {@code bye}.
      *
      * @param args command-line arguments; not used by this application
      */
@@ -44,6 +68,10 @@ public class Zucc {
 
         printResponse(greeting);
 
+        // TODO: Handle attempts to add more than MAX_TASKS tasks.
+        String[] tasks = new String[MAX_TASKS];
+        int taskCount = 0;
+
         try (Scanner scanner = new Scanner(System.in)) {
             while (scanner.hasNextLine()) {
                 String command = scanner.nextLine();
@@ -53,7 +81,14 @@ public class Zucc {
                     break;
                 }
 
-                printResponse(command);
+                if (command.equals("list")) {
+                    printResponse(formatTasks(tasks, taskCount));
+                    continue;
+                }
+
+                tasks[taskCount] = command;
+                taskCount++;
+                printResponse("added: " + command);
             }
         }
     }
