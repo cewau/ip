@@ -63,8 +63,8 @@ public class Zucc {
     }
 
     /**
-     * Greets the user, stores tasks, lists or marks them on request, and exits
-     * when the user enters {@code bye}.
+     * Greets the user, stores tasks, lists or updates their completion status
+     * on request, and exits when the user enters {@code bye}.
      *
      * @param args command-line arguments; not used by this application
      */
@@ -105,8 +105,19 @@ public class Zucc {
                 if (command.startsWith("mark ")) {
                     // TODO: Validate that the mark command contains a valid one-based task index.
                     int taskIndex = Integer.parseInt(command.substring("mark ".length())) - 1;
+                    // TODO: Validate that the task is not already marked as done.
                     isTaskDone[taskIndex] = true;
                     printResponse("Nice! I've marked this task as done:\n  "
+                            + formatTask(tasks[taskIndex], isTaskDone[taskIndex]));
+                    continue;
+                }
+
+                if (command.startsWith("unmark ")) {
+                    // TODO: Validate that the unmark command contains a valid one-based task index.
+                    int taskIndex = Integer.parseInt(command.substring("unmark ".length())) - 1;
+                    // TODO: Validate that the task is currently marked as done.
+                    isTaskDone[taskIndex] = false;
+                    printResponse("OK, I've marked this task as not done yet:\n  "
                             + formatTask(tasks[taskIndex], isTaskDone[taskIndex]));
                     continue;
                 }
