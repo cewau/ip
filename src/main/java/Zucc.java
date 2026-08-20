@@ -32,25 +32,39 @@ public class Zucc {
      * Formats the stored tasks as a one-based numbered list.
      *
      * @param tasks array containing the stored tasks
+     * @param isTaskDone completion status corresponding to each stored task
      * @param taskCount number of tasks currently stored
      * @return all stored tasks, one per line
      */
-    private static String formatTasks(String[] tasks, int taskCount) {
+    private static String formatTasks(String[] tasks, boolean[] isTaskDone, int taskCount) {
         StringBuilder taskList = new StringBuilder();
 
         for (int i = 0; i < taskCount; i++) {
             if (i > 0) {
                 taskList.append('\n');
             }
-            taskList.append(i + 1).append(". ").append(tasks[i]);
+            taskList.append(i + 1)
+                    .append('.')
+                    .append(formatTask(tasks[i], isTaskDone[i]));
         }
 
         return taskList.toString();
     }
 
     /**
-     * Greets the user, stores tasks, lists them on request, and exits when the
-     * user enters {@code bye}.
+     * Formats one task with a checkbox that shows whether it is done.
+     *
+     * @param task description of the task
+     * @param isDone whether the task has been completed
+     * @return the task prefixed by its completion status
+     */
+    private static String formatTask(String task, boolean isDone) {
+        return (isDone ? "[X] " : "[ ] ") + task;
+    }
+
+    /**
+     * Greets the user, stores tasks, lists or marks them on request, and exits
+     * when the user enters {@code bye}.
      *
      * @param args command-line arguments; not used by this application
      */
@@ -70,6 +84,7 @@ public class Zucc {
 
         // TODO: Handle attempts to add more than MAX_TASKS tasks.
         String[] tasks = new String[MAX_TASKS];
+        boolean[] isTaskDone = new boolean[MAX_TASKS];
         int taskCount = 0;
 
         try (Scanner scanner = new Scanner(System.in)) {
@@ -82,7 +97,17 @@ public class Zucc {
                 }
 
                 if (command.equals("list")) {
-                    printResponse(formatTasks(tasks, taskCount));
+                    String taskList = formatTasks(tasks, isTaskDone, taskCount);
+                    printResponse("Here are the tasks in your list:\n" + taskList);
+                    continue;
+                }
+
+                if (command.startsWith("mark ")) {
+                    // TODO: Validate that the mark command contains a valid one-based task index.
+                    int taskIndex = Integer.parseInt(command.substring("mark ".length())) - 1;
+                    isTaskDone[taskIndex] = true;
+                    printResponse("Nice! I've marked this task as done:\n  "
+                            + formatTask(tasks[taskIndex], isTaskDone[taskIndex]));
                     continue;
                 }
 
