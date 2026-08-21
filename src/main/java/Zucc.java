@@ -140,33 +140,34 @@ public class Zucc {
 
                 // TODO: Revisit shared option parsing if these command formats remain aligned.
                 // Parsing stays command-specific for now so future date/time formats can diverge.
-                if (command.startsWith("todo ")) {
-                    String description = command.substring("todo ".length());
+                if (command.equals("todo") || command.startsWith("todo ")) {
+                    String description = command.substring("todo".length()).trim();
+                    if (description.isBlank()) {
+                        printResponse("Zucc can't add a todo without a description.");
+                        continue;
+                    }
                     newTask = new Todo(description);
-                } else if (command.startsWith("deadline ")) {
-                    String deadlineDetails = command.substring("deadline ".length());
+                } else if (command.equals("deadline") || command.startsWith("deadline ")) {
+                    String deadlineDetails = command.substring("deadline".length()).trim();
                     String[] deadlineParts = deadlineDetails.split(" /by ", 2);
                     if (deadlineParts.length < 2) {
-                        // TODO: Replace this placeholder with the final missing-/by error response.
-                        printResponse("Invalid deadline command: missing /by.");
+                        printResponse("Zucc can't add that deadline without /by and a due date.");
                         continue;
                     }
                     String description = deadlineParts[0];
                     String by = deadlineParts[1];
                     newTask = new Deadline(description, by);
-                } else if (command.startsWith("event ")) {
-                    String eventDetails = command.substring("event ".length());
+                } else if (command.equals("event") || command.startsWith("event ")) {
+                    String eventDetails = command.substring("event".length()).trim();
                     String[] fromParts = eventDetails.split(" /from ", 2);
                     if (fromParts.length < 2) {
-                        // TODO: Replace this placeholder with the final missing-/from error response.
-                        printResponse("Invalid event command: missing /from.");
+                        printResponse("Zucc can't add that event without /from and a start time.");
                         continue;
                     }
 
                     String[] toParts = fromParts[1].split(" /to ", 2);
                     if (toParts.length < 2) {
-                        // TODO: Replace this placeholder with the final missing-/to error response.
-                        printResponse("Invalid event command: missing /to.");
+                        printResponse("Zucc can't add that event without /to and an end time.");
                         continue;
                     }
 
@@ -185,10 +186,8 @@ public class Zucc {
                     continue;
                 }
 
-                // TODO: Decide whether to keep this legacy behavior or reject unrecognized commands.
-                tasks[taskCount] = new Task(command);
-                taskCount++;
-                printResponse("added: " + command);
+                printResponse("Zucc doesn't understand that command. "
+                        + "Try todo, deadline, event, list, mark, unmark, or bye.");
             }
         }
     }
