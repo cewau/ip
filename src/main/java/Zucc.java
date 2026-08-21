@@ -149,31 +149,38 @@ public class Zucc {
                     newTask = new Todo(description);
                 } else if (command.equals("deadline") || command.startsWith("deadline ")) {
                     String deadlineDetails = command.substring("deadline".length()).trim();
-                    String[] deadlineParts = deadlineDetails.split(" /by ", 2);
-                    if (deadlineParts.length < 2) {
-                        printResponse("Zucc can't add that deadline without /by and a due date.");
+                    String[] deadlineParts = deadlineDetails.split("\\s+/by(?:\\s+|$)", 2);
+                    if (deadlineParts.length < 2
+                            || deadlineParts[0].isBlank()
+                            || deadlineParts[1].isBlank()) {
+                        printResponse("Zucc needs a deadline description followed by /by and a due date.");
                         continue;
                     }
-                    String description = deadlineParts[0];
-                    String by = deadlineParts[1];
+                    String description = deadlineParts[0].trim();
+                    String by = deadlineParts[1].trim();
                     newTask = new Deadline(description, by);
                 } else if (command.equals("event") || command.startsWith("event ")) {
                     String eventDetails = command.substring("event".length()).trim();
-                    String[] fromParts = eventDetails.split(" /from ", 2);
+                    String eventFormatError = "Zucc needs an event description followed by "
+                            + "/from and /to times.";
+                    String[] fromParts = eventDetails.split("\\s+/from(?:\\s+|$)", 2);
                     if (fromParts.length < 2) {
-                        printResponse("Zucc can't add that event without /from and a start time.");
+                        printResponse(eventFormatError);
                         continue;
                     }
 
-                    String[] toParts = fromParts[1].split(" /to ", 2);
-                    if (toParts.length < 2) {
-                        printResponse("Zucc can't add that event without /to and an end time.");
+                    String[] toParts = fromParts[1].split("\\s+/to(?:\\s+|$)", 2);
+                    if (toParts.length < 2
+                            || fromParts[0].isBlank()
+                            || toParts[0].isBlank()
+                            || toParts[1].isBlank()) {
+                        printResponse(eventFormatError);
                         continue;
                     }
 
-                    String description = fromParts[0];
-                    String from = toParts[0];
-                    String to = toParts[1];
+                    String description = fromParts[0].trim();
+                    String from = toParts[0].trim();
+                    String to = toParts[1].trim();
                     newTask = new Event(description, from, to);
                 }
 
