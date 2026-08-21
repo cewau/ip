@@ -68,7 +68,8 @@ public class Zucc {
         } catch (NumberFormatException ignored) {
             // Malformed and unavailable task numbers use the same helpful response.
         }
-        throw new ZuccException("Zucc can't find that task. Use list to check its number.");
+        throw new ZuccException("Zucc couldn't find that task in the records. "
+                + "Use list to check its number.");
     }
 
     /**
@@ -142,7 +143,7 @@ public class Zucc {
                 if (command.equals("todo") || command.startsWith("todo ")) {
                     String description = command.substring("todo".length()).trim();
                     if (description.isBlank()) {
-                        printResponse("Zucc can't add a todo without a description.");
+                        printResponse("Zucc needs more data: give that todo a description.");
                         continue;
                     }
                     newTask = new Todo(description);
@@ -152,7 +153,8 @@ public class Zucc {
                     if (deadlineParts.length < 2
                             || deadlineParts[0].isBlank()
                             || deadlineParts[1].isBlank()) {
-                        printResponse("Zucc needs a deadline description followed by /by and a due date.");
+                        printResponse("Zucc needs more data: add a deadline description "
+                                + "followed by /by and a due date.");
                         continue;
                     }
                     String description = deadlineParts[0].trim();
@@ -160,8 +162,8 @@ public class Zucc {
                     newTask = new Deadline(description, by);
                 } else if (command.equals("event") || command.startsWith("event ")) {
                     String eventDetails = command.substring("event".length()).trim();
-                    String eventFormatError = "Zucc needs an event description followed by "
-                            + "/from and /to times.";
+                    String eventFormatError = "Zucc needs more data: add an event description "
+                            + "followed by /from and /to times.";
                     String[] fromParts = eventDetails.split("\\s+/from(?:\\s+|$)", 2);
                     if (fromParts.length < 2) {
                         printResponse(eventFormatError);
@@ -185,8 +187,8 @@ public class Zucc {
 
                 if (newTask != null) {
                     if (taskCount >= MAX_TASKS) {
-                        printResponse("Zucc can't store more than " + MAX_TASKS
-                                + " tasks in one session.");
+                        printResponse("Zucc has collected all " + MAX_TASKS
+                                + " tasks this session can hold.");
                         continue;
                     }
                     tasks[taskCount] = newTask;
@@ -197,7 +199,7 @@ public class Zucc {
                     continue;
                 }
 
-                printResponse("Zucc doesn't understand that command. "
+                printResponse("Zucc's algorithm doesn't recognize that command. "
                         + "Try todo, deadline, event, list, mark, unmark, or bye.");
             }
         }

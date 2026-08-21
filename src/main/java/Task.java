@@ -34,7 +34,7 @@ public class Task {
      */
     public void markAsDone() throws ZuccException {
         if (isDone) {
-            throw new ZuccException("Zucc already marked that task as done.");
+            throw new ZuccException("Zucc's records already show that task as done.");
         }
         isDone = true;
     }
@@ -46,7 +46,7 @@ public class Task {
      */
     public void markAsNotDone() throws ZuccException {
         if (!isDone) {
-            throw new ZuccException("Zucc already marked that task as not done.");
+            throw new ZuccException("Zucc's records already show that task as not done.");
         }
         isDone = false;
     }
