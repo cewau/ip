@@ -107,17 +107,14 @@ public class Zucc {
                     continue;
                 }
 
+                Task newTask = null;
+
+                // TODO: Revisit shared option parsing if these command formats remain aligned.
+                // Parsing stays command-specific for now so future date/time formats can diverge.
                 if (command.startsWith("todo ")) {
                     String description = command.substring("todo ".length());
-                    tasks[taskCount] = new Todo(description);
-                    taskCount++;
-                    printResponse("Got it. I've added this task:\n  "
-                            + tasks[taskCount - 1]
-                            + "\nNow you have " + taskCount + " tasks in the list.");
-                    continue;
-                }
-
-                if (command.startsWith("deadline ")) {
+                    newTask = new Todo(description);
+                } else if (command.startsWith("deadline ")) {
                     String deadlineDetails = command.substring("deadline ".length());
                     String[] deadlineParts = deadlineDetails.split(" /by ", 2);
                     if (deadlineParts.length < 2) {
@@ -127,15 +124,8 @@ public class Zucc {
                     }
                     String description = deadlineParts[0];
                     String by = deadlineParts[1];
-                    tasks[taskCount] = new Deadline(description, by);
-                    taskCount++;
-                    printResponse("Got it. I've added this task:\n  "
-                            + tasks[taskCount - 1]
-                            + "\nNow you have " + taskCount + " tasks in the list.");
-                    continue;
-                }
-
-                if (command.startsWith("event ")) {
+                    newTask = new Deadline(description, by);
+                } else if (command.startsWith("event ")) {
                     String eventDetails = command.substring("event ".length());
                     String[] fromParts = eventDetails.split(" /from ", 2);
                     if (fromParts.length < 2) {
@@ -154,10 +144,14 @@ public class Zucc {
                     String description = fromParts[0];
                     String from = toParts[0];
                     String to = toParts[1];
-                    tasks[taskCount] = new Event(description, from, to);
+                    newTask = new Event(description, from, to);
+                }
+
+                if (newTask != null) {
+                    tasks[taskCount] = newTask;
                     taskCount++;
                     printResponse("Got it. I've added this task:\n  "
-                            + tasks[taskCount - 1]
+                            + newTask
                             + "\nNow you have " + taskCount + " tasks in the list.");
                     continue;
                 }
