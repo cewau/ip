@@ -27,15 +27,27 @@ public class Task {
         return isDone ? "X" : " ";
     }
 
-    /** Marks this task as completed. */
-    public void markAsDone() {
-        // TODO: Validate that the task is not already marked as done.
+    /**
+     * Marks this task as completed.
+     *
+     * @throws ZuccException if the task is already completed
+     */
+    public void markAsDone() throws ZuccException {
+        if (isDone) {
+            throw new ZuccException("Zucc already marked that task as done.");
+        }
         isDone = true;
     }
 
-    /** Marks this task as not completed. */
-    public void markAsNotDone() {
-        // TODO: Validate that the task is currently marked as done.
+    /**
+     * Marks this task as not completed.
+     *
+     * @throws ZuccException if the task is already incomplete
+     */
+    public void markAsNotDone() throws ZuccException {
+        if (!isDone) {
+            throw new ZuccException("Zucc already marked that task as not done.");
+        }
         isDone = false;
     }
 
