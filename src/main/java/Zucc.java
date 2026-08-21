@@ -51,6 +51,27 @@ public class Zucc {
     }
 
     /**
+     * Converts a user-provided one-based task number to an array index.
+     *
+     * @param taskNumberText user-provided task number
+     * @param taskCount number of tasks currently stored
+     * @return the corresponding zero-based array index
+     * @throws ZuccException if the number is missing, malformed, or out of range
+     */
+    private static int parseTaskIndex(String taskNumberText, int taskCount)
+            throws ZuccException {
+        try {
+            int taskIndex = Integer.parseInt(taskNumberText) - 1;
+            if (taskIndex >= 0 && taskIndex < taskCount) {
+                return taskIndex;
+            }
+        } catch (NumberFormatException ignored) {
+            // Malformed and unavailable task numbers use the same helpful response.
+        }
+        throw new ZuccException("Zucc can't find that task. Use list to check its number.");
+    }
+
+    /**
      * Greets the user, stores tasks, lists or updates their completion status
      * on request, and exits when the user enters {@code bye}.
      *
@@ -89,21 +110,29 @@ public class Zucc {
                     continue;
                 }
 
-                if (command.startsWith("mark ")) {
-                    // TODO: Validate that the mark command contains a valid one-based task index.
-                    int taskIndex = Integer.parseInt(command.substring("mark ".length())) - 1;
-                    tasks[taskIndex].markAsDone();
-                    printResponse("Nice! I've marked this task as done:\n  "
-                            + tasks[taskIndex]);
+                if (command.equals("mark") || command.startsWith("mark ")) {
+                    try {
+                        String taskNumberText = command.substring("mark".length()).trim();
+                        int taskIndex = parseTaskIndex(taskNumberText, taskCount);
+                        tasks[taskIndex].markAsDone();
+                        printResponse("Nice! I've marked this task as done:\n  "
+                                + tasks[taskIndex]);
+                    } catch (ZuccException exception) {
+                        printResponse(exception.getMessage());
+                    }
                     continue;
                 }
 
-                if (command.startsWith("unmark ")) {
-                    // TODO: Validate that the unmark command contains a valid one-based task index.
-                    int taskIndex = Integer.parseInt(command.substring("unmark ".length())) - 1;
-                    tasks[taskIndex].markAsNotDone();
-                    printResponse("OK, I've marked this task as not done yet:\n  "
-                            + tasks[taskIndex]);
+                if (command.equals("unmark") || command.startsWith("unmark ")) {
+                    try {
+                        String taskNumberText = command.substring("unmark".length()).trim();
+                        int taskIndex = parseTaskIndex(taskNumberText, taskCount);
+                        tasks[taskIndex].markAsNotDone();
+                        printResponse("OK, I've marked this task as not done yet:\n  "
+                                + tasks[taskIndex]);
+                    } catch (ZuccException exception) {
+                        printResponse(exception.getMessage());
+                    }
                     continue;
                 }
 
