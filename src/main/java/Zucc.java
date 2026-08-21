@@ -117,6 +117,24 @@ public class Zucc {
                     continue;
                 }
 
+                if (command.startsWith("deadline ")) {
+                    String deadlineDetails = command.substring("deadline ".length());
+                    String[] deadlineParts = deadlineDetails.split(" /by ", 2);
+                    if (deadlineParts.length < 2) {
+                        // TODO: Replace this placeholder with the final missing-/by error response.
+                        printResponse("Invalid deadline command: missing /by.");
+                        continue;
+                    }
+                    String description = deadlineParts[0];
+                    String by = deadlineParts[1];
+                    tasks[taskCount] = new Deadline(description, by);
+                    taskCount++;
+                    printResponse("Got it. I've added this task:\n  "
+                            + tasks[taskCount - 1]
+                            + "\nNow you have " + taskCount + " tasks in the list.");
+                    continue;
+                }
+
                 // TODO: Decide whether to keep this legacy behavior or reject unrecognized commands.
                 tasks[taskCount] = new Task(command);
                 taskCount++;
