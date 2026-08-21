@@ -107,6 +107,17 @@ public class Zucc {
                     continue;
                 }
 
+                if (command.startsWith("todo ")) {
+                    String description = command.substring("todo ".length());
+                    tasks[taskCount] = new Todo(description);
+                    taskCount++;
+                    printResponse("Got it. I've added this task:\n  "
+                            + tasks[taskCount - 1]
+                            + "\nNow you have " + taskCount + " tasks in the list.");
+                    continue;
+                }
+
+                // TODO: Decide whether to keep this legacy behavior or reject unrecognized commands.
                 tasks[taskCount] = new Task(command);
                 taskCount++;
                 printResponse("added: " + command);
