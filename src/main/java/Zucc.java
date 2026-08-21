@@ -135,6 +135,33 @@ public class Zucc {
                     continue;
                 }
 
+                if (command.startsWith("event ")) {
+                    String eventDetails = command.substring("event ".length());
+                    String[] fromParts = eventDetails.split(" /from ", 2);
+                    if (fromParts.length < 2) {
+                        // TODO: Replace this placeholder with the final missing-/from error response.
+                        printResponse("Invalid event command: missing /from.");
+                        continue;
+                    }
+
+                    String[] toParts = fromParts[1].split(" /to ", 2);
+                    if (toParts.length < 2) {
+                        // TODO: Replace this placeholder with the final missing-/to error response.
+                        printResponse("Invalid event command: missing /to.");
+                        continue;
+                    }
+
+                    String description = fromParts[0];
+                    String from = toParts[0];
+                    String to = toParts[1];
+                    tasks[taskCount] = new Event(description, from, to);
+                    taskCount++;
+                    printResponse("Got it. I've added this task:\n  "
+                            + tasks[taskCount - 1]
+                            + "\nNow you have " + taskCount + " tasks in the list.");
+                    continue;
+                }
+
                 // TODO: Decide whether to keep this legacy behavior or reject unrecognized commands.
                 tasks[taskCount] = new Task(command);
                 taskCount++;
