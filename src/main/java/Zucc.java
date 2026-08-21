@@ -1,12 +1,11 @@
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 /**
  * Starts the Zucc chatbot application.
  */
 public class Zucc {
-    /** Maximum number of tasks that can be stored during one run. */
-    private static final int MAX_TASKS = 100;
-
     /** A visual separator used to frame the chatbot's messages. */
     private static final String SEPARATOR = "____________________________________________________________";
 
@@ -31,27 +30,26 @@ public class Zucc {
     /**
      * Formats the stored tasks as a one-based numbered list.
      *
-     * @param tasks array containing the stored tasks
-     * @param taskCount number of tasks currently stored
+     * @param tasks list containing the stored tasks
      * @return all stored tasks, one per line
      */
-    private static String formatTasks(Task[] tasks, int taskCount) {
+    private static String formatTasks(List<Task> tasks) {
         StringBuilder taskList = new StringBuilder();
 
-        for (int i = 0; i < taskCount; i++) {
+        for (int i = 0; i < tasks.size(); i++) {
             if (i > 0) {
                 taskList.append('\n');
             }
             taskList.append(i + 1)
                     .append('.')
-                    .append(tasks[i]);
+                    .append(tasks.get(i));
         }
 
         return taskList.toString();
     }
 
     /**
-     * Converts a user-provided one-based task number to an array index.
+     * Converts a user-provided one-based task number to a list index.
      *
      * @param taskNumberText user-provided task number
      * @param taskCount number of tasks currently stored
@@ -73,8 +71,8 @@ public class Zucc {
     }
 
     /**
-     * Greets the user, stores tasks, lists or updates their completion status
-     * on request, and exits when the user enters {@code bye}.
+     * Greets the user, stores tasks in a collection, lists, deletes, or updates
+     * their completion status on request, and exits when the user enters {@code bye}.
      *
      * @param args command-line arguments; not used by this application
      */
@@ -92,8 +90,7 @@ public class Zucc {
 
         printResponse(greeting);
 
-        Task[] tasks = new Task[MAX_TASKS];
-        int taskCount = 0;
+        List<Task> tasks = new ArrayList<>();
 
         try (Scanner scanner = new Scanner(System.in)) {
             while (scanner.hasNextLine()) {
@@ -105,18 +102,32 @@ public class Zucc {
                 }
 
                 if (command.equals("list")) {
-                    String taskList = formatTasks(tasks, taskCount);
+                    String taskList = formatTasks(tasks);
                     printResponse("Here are the tasks in your list:\n" + taskList);
+                    continue;
+                }
+
+                if (command.equals("delete") || command.startsWith("delete ")) {
+                    try {
+                        String taskNumberText = command.substring("delete".length()).trim();
+                        int taskIndex = parseTaskIndex(taskNumberText, tasks.size());
+                        Task removedTask = tasks.remove(taskIndex);
+                        printResponse("Noted. I've removed this task:\n  "
+                                + removedTask
+                                + "\nNow you have " + tasks.size() + " tasks in the list.");
+                    } catch (ZuccException exception) {
+                        printResponse(exception.getMessage());
+                    }
                     continue;
                 }
 
                 if (command.equals("mark") || command.startsWith("mark ")) {
                     try {
                         String taskNumberText = command.substring("mark".length()).trim();
-                        int taskIndex = parseTaskIndex(taskNumberText, taskCount);
-                        tasks[taskIndex].markAsDone();
+                        int taskIndex = parseTaskIndex(taskNumberText, tasks.size());
+                        tasks.get(taskIndex).markAsDone();
                         printResponse("Nice! I've marked this task as done:\n  "
-                                + tasks[taskIndex]);
+                                + tasks.get(taskIndex));
                     } catch (ZuccException exception) {
                         printResponse(exception.getMessage());
                     }
@@ -126,10 +137,10 @@ public class Zucc {
                 if (command.equals("unmark") || command.startsWith("unmark ")) {
                     try {
                         String taskNumberText = command.substring("unmark".length()).trim();
-                        int taskIndex = parseTaskIndex(taskNumberText, taskCount);
-                        tasks[taskIndex].markAsNotDone();
+                        int taskIndex = parseTaskIndex(taskNumberText, tasks.size());
+                        tasks.get(taskIndex).markAsNotDone();
                         printResponse("OK, I've marked this task as not done yet:\n  "
-                                + tasks[taskIndex]);
+                                + tasks.get(taskIndex));
                     } catch (ZuccException exception) {
                         printResponse(exception.getMessage());
                     }
@@ -186,21 +197,15 @@ public class Zucc {
                 }
 
                 if (newTask != null) {
-                    if (taskCount >= MAX_TASKS) {
-                        printResponse("Zucc has collected all " + MAX_TASKS
-                                + " tasks this session can hold.");
-                        continue;
-                    }
-                    tasks[taskCount] = newTask;
-                    taskCount++;
+                    tasks.add(newTask);
                     printResponse("Got it. I've added this task:\n  "
                             + newTask
-                            + "\nNow you have " + taskCount + " tasks in the list.");
+                            + "\nNow you have " + tasks.size() + " tasks in the list.");
                     continue;
                 }
 
                 printResponse("Zucc's algorithm doesn't recognize that command. "
-                        + "Try todo, deadline, event, list, mark, unmark, or bye.");
+                        + "Try todo, deadline, event, list, mark, unmark, delete, or bye.");
             }
         }
     }
