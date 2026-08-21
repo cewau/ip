@@ -91,7 +91,6 @@ public class Zucc {
 
         printResponse(greeting);
 
-        // TODO: Handle attempts to add more than MAX_TASKS tasks.
         Task[] tasks = new Task[MAX_TASKS];
         int taskCount = 0;
 
@@ -185,6 +184,11 @@ public class Zucc {
                 }
 
                 if (newTask != null) {
+                    if (taskCount >= MAX_TASKS) {
+                        printResponse("Zucc can't store more than " + MAX_TASKS
+                                + " tasks in one session.");
+                        continue;
+                    }
                     tasks[taskCount] = newTask;
                     taskCount++;
                     printResponse("Got it. I've added this task:\n  "
