@@ -71,6 +71,19 @@ public class Zucc {
     }
 
     /**
+     * Adds a task and confirms the updated task count.
+     *
+     * @param tasks list in which to store the task
+     * @param newTask task to add
+     */
+    private static void addTask(List<Task> tasks, Task newTask) {
+        tasks.add(newTask);
+        printResponse("Got it. I've added this task:\n  "
+                + newTask
+                + "\nNow you have " + tasks.size() + " tasks in the list.");
+    }
+
+    /**
      * Greets the user, stores tasks in a collection, lists, deletes, or updates
      * their completion status on request, and exits when the user enters {@code bye}.
      *
@@ -94,118 +107,63 @@ public class Zucc {
 
         try (Scanner scanner = new Scanner(System.in)) {
             while (scanner.hasNextLine()) {
-                String command = scanner.nextLine();
+                try {
+                    ParsedCommand command = new ParsedCommand(scanner.nextLine());
 
-                if (command.equals("bye")) {
-                    printResponse("Bye. Hope to see you again soon!");
-                    break;
-                }
-
-                if (command.equals("list")) {
-                    String taskList = formatTasks(tasks);
-                    printResponse("Here are the tasks in your list:\n" + taskList);
-                    continue;
-                }
-
-                if (command.equals("delete") || command.startsWith("delete ")) {
-                    try {
-                        String taskNumberText = command.substring("delete".length()).trim();
-                        int taskIndex = parseTaskIndex(taskNumberText, tasks.size());
+                    switch (command.getType()) {
+                    case BYE -> {
+                        command.requireNoArguments();
+                        printResponse("Bye. Hope to see you again soon!");
+                        return;
+                    }
+                    case LIST -> {
+                        command.requireNoArguments();
+                        printResponse("Here are the tasks in your list:\n" + formatTasks(tasks));
+                    }
+                    case DELETE -> {
+                        command.rejectUnexpectedOptions();
+                        int taskIndex = parseTaskIndex(command.getArgument(), tasks.size());
                         Task removedTask = tasks.remove(taskIndex);
                         printResponse("Noted. I've removed this task:\n  "
                                 + removedTask
                                 + "\nNow you have " + tasks.size() + " tasks in the list.");
-                    } catch (ZuccException exception) {
-                        printResponse(exception.getMessage());
                     }
-                    continue;
-                }
-
-                if (command.equals("mark") || command.startsWith("mark ")) {
-                    try {
-                        String taskNumberText = command.substring("mark".length()).trim();
-                        int taskIndex = parseTaskIndex(taskNumberText, tasks.size());
+                    case MARK -> {
+                        command.rejectUnexpectedOptions();
+                        int taskIndex = parseTaskIndex(command.getArgument(), tasks.size());
                         tasks.get(taskIndex).markAsDone();
                         printResponse("Nice! I've marked this task as done:\n  "
                                 + tasks.get(taskIndex));
-                    } catch (ZuccException exception) {
-                        printResponse(exception.getMessage());
                     }
-                    continue;
-                }
-
-                if (command.equals("unmark") || command.startsWith("unmark ")) {
-                    try {
-                        String taskNumberText = command.substring("unmark".length()).trim();
-                        int taskIndex = parseTaskIndex(taskNumberText, tasks.size());
+                    case UNMARK -> {
+                        command.rejectUnexpectedOptions();
+                        int taskIndex = parseTaskIndex(command.getArgument(), tasks.size());
                         tasks.get(taskIndex).markAsNotDone();
                         printResponse("OK, I've marked this task as not done yet:\n  "
                                 + tasks.get(taskIndex));
-                    } catch (ZuccException exception) {
-                        printResponse(exception.getMessage());
                     }
-                    continue;
+                    case TODO -> {
+                        command.rejectUnexpectedOptions();
+                        addTask(tasks, new Todo(command.getArgument()));
+                    }
+                    case DEADLINE -> {
+                        command.rejectUnexpectedOptions("/by");
+                        String by = command.getRequiredOption("/by");
+                        addTask(tasks, new Deadline(command.getArgument(), by));
+                    }
+                    case EVENT -> {
+                        command.rejectUnexpectedOptions("/from", "/to");
+                        String from = command.getRequiredOption("/from");
+                        String to = command.getRequiredOption("/to");
+                        addTask(tasks, new Event(
+                                command.getArgument(),
+                                from,
+                                to));
+                    }
+                    }
+                } catch (ZuccException exception) {
+                    printResponse(exception.getMessage());
                 }
-
-                Task newTask = null;
-
-                // TODO: Revisit shared option parsing if these command formats remain aligned.
-                // Parsing stays command-specific for now so future date/time formats can diverge.
-                if (command.equals("todo") || command.startsWith("todo ")) {
-                    String description = command.substring("todo".length()).trim();
-                    if (description.isBlank()) {
-                        printResponse("Zucc needs more data: give that todo a description.");
-                        continue;
-                    }
-                    newTask = new Todo(description);
-                } else if (command.equals("deadline") || command.startsWith("deadline ")) {
-                    String deadlineDetails = command.substring("deadline".length()).trim();
-                    String[] deadlineParts = deadlineDetails.split("\\s+/by(?:\\s+|$)", 2);
-                    if (deadlineParts.length < 2
-                            || deadlineParts[0].isBlank()
-                            || deadlineParts[1].isBlank()) {
-                        printResponse("Zucc needs more data: add a deadline description "
-                                + "followed by /by and a due date.");
-                        continue;
-                    }
-                    String description = deadlineParts[0].trim();
-                    String by = deadlineParts[1].trim();
-                    newTask = new Deadline(description, by);
-                } else if (command.equals("event") || command.startsWith("event ")) {
-                    String eventDetails = command.substring("event".length()).trim();
-                    String eventFormatError = "Zucc needs more data: add an event description "
-                            + "followed by /from and /to times.";
-                    String[] fromParts = eventDetails.split("\\s+/from(?:\\s+|$)", 2);
-                    if (fromParts.length < 2) {
-                        printResponse(eventFormatError);
-                        continue;
-                    }
-
-                    String[] toParts = fromParts[1].split("\\s+/to(?:\\s+|$)", 2);
-                    if (toParts.length < 2
-                            || fromParts[0].isBlank()
-                            || toParts[0].isBlank()
-                            || toParts[1].isBlank()) {
-                        printResponse(eventFormatError);
-                        continue;
-                    }
-
-                    String description = fromParts[0].trim();
-                    String from = toParts[0].trim();
-                    String to = toParts[1].trim();
-                    newTask = new Event(description, from, to);
-                }
-
-                if (newTask != null) {
-                    tasks.add(newTask);
-                    printResponse("Got it. I've added this task:\n  "
-                            + newTask
-                            + "\nNow you have " + tasks.size() + " tasks in the list.");
-                    continue;
-                }
-
-                printResponse("Zucc's algorithm doesn't recognize that command. "
-                        + "Try todo, deadline, event, list, mark, unmark, delete, or bye.");
             }
         }
     }

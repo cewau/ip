@@ -3,6 +3,11 @@
  * Both values are stored as text so that users may choose a convenient format.
  */
 public class Event extends Task {
+    /** Error used when an event is missing any of its required values. */
+    private static final String INVALID_EVENT_ERROR =
+            "Zucc needs more data: add an event description "
+                    + "followed by /from and /to times.";
+
     /** The user-provided date or time at which the event starts. */
     private final String from;
 
@@ -15,11 +20,12 @@ public class Event extends Task {
      * @param description description of the event
      * @param from user-provided start date or time
      * @param to user-provided end date or time
+     * @throws ZuccException if the description, start, or end is blank
      */
-    public Event(String description, String from, String to) {
-        super(description);
-        this.from = from;
-        this.to = to;
+    public Event(String description, String from, String to) throws ZuccException {
+        super(requireNonBlank(description, INVALID_EVENT_ERROR));
+        this.from = requireNonBlank(from, INVALID_EVENT_ERROR);
+        this.to = requireNonBlank(to, INVALID_EVENT_ERROR);
     }
 
     /**

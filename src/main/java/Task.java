@@ -8,14 +8,37 @@ public class Task {
     /** Whether this task has been completed. */
     protected boolean isDone;
 
+    /** Error used when a base task is created without a description. */
+    private static final String MISSING_DESCRIPTION_ERROR =
+            "Zucc needs more data: give that task a description.";
+
     /**
      * Creates an incomplete task with the given description.
      *
      * @param description description of the task
+     * @throws ZuccException if the description is blank
      */
-    public Task(String description) {
-        this.description = description;
+    public Task(String description) throws ZuccException {
+        this.description = requireNonBlank(description, MISSING_DESCRIPTION_ERROR);
         this.isDone = false;
+    }
+
+    /**
+     * Returns a required value after ensuring it contains meaningful text.
+     * Subclasses use this helper to enforce their own constructor invariants
+     * while retaining command-specific error messages.
+     *
+     * @param value required value
+     * @param errorMessage message to use if the value is blank
+     * @return the validated value
+     * @throws ZuccException if the value is {@code null}, empty, or whitespace-only
+     */
+    protected static String requireNonBlank(String value, String errorMessage)
+            throws ZuccException {
+        if (value == null || value.isBlank()) {
+            throw new ZuccException(errorMessage);
+        }
+        return value;
     }
 
     /**

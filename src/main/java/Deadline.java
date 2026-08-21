@@ -3,6 +3,11 @@
  * The deadline is stored as text so that users may enter any useful description.
  */
 public class Deadline extends Task {
+    /** Error used when a deadline is missing any of its required values. */
+    private static final String INVALID_DEADLINE_ERROR =
+            "Zucc needs more data: add a deadline description "
+                    + "followed by /by and a due date.";
+
     /** The user-provided date or time by which the task should be completed. */
     private final String by;
 
@@ -11,10 +16,11 @@ public class Deadline extends Task {
      *
      * @param description description of the task
      * @param by user-provided deadline text
+     * @throws ZuccException if the description or deadline is blank
      */
-    public Deadline(String description, String by) {
-        super(description);
-        this.by = by;
+    public Deadline(String description, String by) throws ZuccException {
+        super(requireNonBlank(description, INVALID_DEADLINE_ERROR));
+        this.by = requireNonBlank(by, INVALID_DEADLINE_ERROR);
     }
 
     /**
