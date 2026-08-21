@@ -30,3 +30,7 @@ Prerequisites: JDK 25, update Intellij to the most recent version.
    ```
 
 **Warning:** Keep the `src\main\java` folder as the root folder for Java files (i.e., don't rename those folders or move Java files to another folder outside of this folder path), as this is the default location some tools (e.g., Gradle) expect to find Java files.
+
+## Use of generative AI
+
+OpenAI Codex was used extensively in the development of this project and produced most of the source code from written project requirements. Before each commit, a human reviewed the proposed changes and directed further revisions where necessary, often through several rounds, to keep the implementation aligned with the requirements and the project's overall design. The human author made the final decisions about which changes to accept and remains responsible for the submitted code.
