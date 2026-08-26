@@ -2,6 +2,9 @@
  * Represents a task that has no date or time attached to it.
  */
 public class Todo extends Task {
+    /** Short identifier used when displaying and storing to-dos. */
+    static final String TYPE_CODE = "T";
+
     /** Error used when a to-do is missing its required description. */
     private static final String INVALID_TODO_ERROR =
             "Zucc needs more data: give that todo a description.";
@@ -17,12 +20,36 @@ public class Todo extends Task {
     }
 
     /**
+     * Reconstructs a to-do from decoded storage fields.
+     * The field-count check runs before the superclass constructor so indexing is safe.
+     *
+     * @param fields decoded type, status, and description
+     * @throws ZuccException if the fields do not describe a valid to-do
+     */
+    Todo(String[] fields) throws ZuccException {
+        if (fields == null || fields.length != 3) {
+            throw new ZuccException("Invalid stored to-do.");
+        }
+        super(fields[2], fields[1]);
+    }
+
+    /**
+     * Supplies the plain type field needed to store this to-do.
+     *
+     * @return type code for this to-do
+     */
+    @Override
+    protected String[] getStorageFields() {
+        return new String[]{TYPE_CODE};
+    }
+
+    /**
      * Formats this task with the type marker used for to-dos.
      *
      * @return the task in {@code [T][status] description} format
      */
     @Override
     public String toString() {
-        return "[T]" + super.toString();
+        return "[" + TYPE_CODE + "]" + super.toString();
     }
 }
