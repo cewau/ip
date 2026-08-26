@@ -3,7 +3,7 @@ import java.util.List;
 import java.util.Scanner;
 
 /**
- * Starts the Zucc chatbot application.
+ * Owns Zucc's persistent task state and starts the command-line interface.
  */
 public class Zucc {
     /** A visual separator used to frame the chatbot's messages. */
@@ -17,6 +17,27 @@ public class Zucc {
 
     /** File used to preserve tasks between application runs. */
     private static final Path TASK_FILE_PATH = Path.of("data", "zucc.txt");
+
+    /** Error shown when a task index does not identify a stored task. */
+    private static final String TASK_NOT_FOUND_ERROR =
+            "Zucc couldn't find that task in the records. Use list to check its number.";
+
+    /** Tasks in the current chatbot session. */
+    private final List<Task> tasks;
+
+    /** Persistent storage updated whenever the task state changes. */
+    private final Storage storage;
+
+    /**
+     * Creates a chatbot whose state is backed by the given data file.
+     *
+     * @param taskFilePath file from which tasks are loaded and to which they are saved
+     * @throws ZuccException if existing task data cannot be loaded
+     */
+    public Zucc(Path taskFilePath) throws ZuccException {
+        storage = new Storage(taskFilePath);
+        tasks = storage.loadTasks();
+    }
 
     /**
      * Prints a response between separators using the required indentation.
@@ -33,10 +54,10 @@ public class Zucc {
     /**
      * Formats the stored tasks as a one-based numbered list.
      *
-     * @param tasks list containing the stored tasks
      * @return all stored tasks, one per line
      */
-    private static String formatTasks(List<Task> tasks) {
+    @Override
+    public String toString() {
         StringBuilder taskList = new StringBuilder();
 
         for (int i = 0; i < tasks.size(); i++) {
@@ -55,39 +76,106 @@ public class Zucc {
      * Converts a user-provided one-based task number to a list index.
      *
      * @param taskNumberText user-provided task number
-     * @param taskCount number of tasks currently stored
      * @return the corresponding zero-based array index
-     * @throws ZuccException if the number is missing, malformed, or out of range
+     * @throws ZuccException if the number is missing or malformed
      */
-    private static int parseTaskIndex(String taskNumberText, int taskCount)
-            throws ZuccException {
+    private static int parseTaskIndex(String taskNumberText) throws ZuccException {
         try {
-            int taskIndex = Integer.parseInt(taskNumberText) - 1;
-            if (taskIndex >= 0 && taskIndex < taskCount) {
-                return taskIndex;
-            }
+            return Integer.parseInt(taskNumberText) - 1;
         } catch (NumberFormatException ignored) {
-            // Malformed and unavailable task numbers use the same helpful response.
+            // Malformed input and unavailable task numbers use the same response.
         }
-        throw new ZuccException("Zucc couldn't find that task in the records. "
-                + "Use list to check its number.");
+        throw new ZuccException(TASK_NOT_FOUND_ERROR);
     }
 
     /**
-     * Adds a task and confirms the updated task count.
+     * Returns a task after ensuring its zero-based index is available.
      *
-     * @param tasks list in which to store the task
+     * @param taskIndex zero-based task index
+     * @return task at the requested index
+     * @throws ZuccException if the index is outside the current task list
+     */
+    private Task getTask(int taskIndex) throws ZuccException {
+        if (taskIndex < 0 || taskIndex >= tasks.size()) {
+            throw new ZuccException(TASK_NOT_FOUND_ERROR);
+        }
+        return tasks.get(taskIndex);
+    }
+
+    /**
+     * Adds a task and immediately persists the updated list.
+     *
      * @param newTask task to add
-     * @param storage persistent storage to update after adding the task
      * @throws ZuccException if the updated list cannot be saved
      */
-    private static void addTask(List<Task> tasks, Task newTask, Storage storage)
-            throws ZuccException {
+    public void addTask(Task newTask) throws ZuccException {
         tasks.add(newTask);
         storage.saveTasks(tasks);
+    }
+
+    /**
+     * Removes a numbered task and immediately persists the updated list.
+     *
+     * @param taskIndex zero-based index of the task to remove
+     * @return removed task
+     * @throws ZuccException if the index is invalid or the list cannot be saved
+     */
+    public Task deleteTask(int taskIndex) throws ZuccException {
+        Task removedTask = getTask(taskIndex);
+        tasks.remove(taskIndex);
+        storage.saveTasks(tasks);
+        return removedTask;
+    }
+
+    /**
+     * Marks a numbered task as done and persists its new state.
+     *
+     * @param taskIndex zero-based index of the task to mark
+     * @return updated task
+     * @throws ZuccException if the index is invalid or the task cannot be marked or saved
+     */
+    public Task markTask(int taskIndex) throws ZuccException {
+        Task task = getTask(taskIndex);
+        task.markAsDone();
+        storage.saveTasks(tasks);
+        return task;
+    }
+
+    /**
+     * Marks a numbered task as incomplete and persists its new state.
+     *
+     * @param taskIndex zero-based index of the task to unmark
+     * @return updated task
+     * @throws ZuccException if the index is invalid or the task cannot be unmarked or saved
+     */
+    public Task unmarkTask(int taskIndex) throws ZuccException {
+        Task task = getTask(taskIndex);
+        task.markAsNotDone();
+        storage.saveTasks(tasks);
+        return task;
+    }
+
+    /**
+     * Returns the number of tasks currently managed by this chatbot.
+     *
+     * @return current task count
+     */
+    public int getTaskCount() {
+        return tasks.size();
+    }
+
+    /**
+     * Adds a task through the stateful chatbot and prints the CLI confirmation.
+     *
+     * @param zucc chatbot instance that owns the task state
+     * @param newTask task to add
+     * @throws ZuccException if the updated list cannot be saved
+     */
+    private static void addTaskAndRespond(Zucc zucc, Task newTask) throws ZuccException {
+        zucc.addTask(newTask);
         printResponse("Got it. I've added this task:\n  "
                 + newTask
-                + "\nNow you have " + tasks.size() + " tasks in the list.");
+                + "\nNow you have " + zucc.getTaskCount() + " tasks in the list.");
     }
 
     /**
@@ -108,10 +196,9 @@ public class Zucc {
                 + "Hello! I'm Zucc.\n"
                 + "What can I do for you?";
 
-        Storage storage = new Storage(TASK_FILE_PATH);
-        List<Task> tasks;
+        Zucc zucc;
         try {
-            tasks = storage.loadTasks();
+            zucc = new Zucc(TASK_FILE_PATH);
         } catch (ZuccException exception) {
             printResponse(exception.getMessage());
             return;
@@ -132,50 +219,48 @@ public class Zucc {
                     }
                     case LIST -> {
                         command.requireNoArguments();
-                        printResponse("Here are the tasks in your list:\n" + formatTasks(tasks));
+                        printResponse("Here are the tasks in your list:\n" + zucc);
                     }
                     case DELETE -> {
                         command.rejectUnexpectedOptions();
-                        int taskIndex = parseTaskIndex(command.getArgument(), tasks.size());
-                        Task removedTask = tasks.remove(taskIndex);
-                        storage.saveTasks(tasks);
+                        int taskIndex = parseTaskIndex(command.getArgument());
+                        Task removedTask = zucc.deleteTask(taskIndex);
                         printResponse("Noted. I've removed this task:\n  "
                                 + removedTask
-                                + "\nNow you have " + tasks.size() + " tasks in the list.");
+                                + "\nNow you have " + zucc.getTaskCount()
+                                + " tasks in the list.");
                     }
                     case MARK -> {
                         command.rejectUnexpectedOptions();
-                        int taskIndex = parseTaskIndex(command.getArgument(), tasks.size());
-                        tasks.get(taskIndex).markAsDone();
-                        storage.saveTasks(tasks);
+                        int taskIndex = parseTaskIndex(command.getArgument());
+                        Task markedTask = zucc.markTask(taskIndex);
                         printResponse("Nice! I've marked this task as done:\n  "
-                                + tasks.get(taskIndex));
+                                + markedTask);
                     }
                     case UNMARK -> {
                         command.rejectUnexpectedOptions();
-                        int taskIndex = parseTaskIndex(command.getArgument(), tasks.size());
-                        tasks.get(taskIndex).markAsNotDone();
-                        storage.saveTasks(tasks);
+                        int taskIndex = parseTaskIndex(command.getArgument());
+                        Task unmarkedTask = zucc.unmarkTask(taskIndex);
                         printResponse("OK, I've marked this task as not done yet:\n  "
-                                + tasks.get(taskIndex));
+                                + unmarkedTask);
                     }
                     case TODO -> {
                         command.rejectUnexpectedOptions();
-                        addTask(tasks, new Todo(command.getArgument()), storage);
+                        addTaskAndRespond(zucc, new Todo(command.getArgument()));
                     }
                     case DEADLINE -> {
                         command.rejectUnexpectedOptions("/by");
                         String by = command.getRequiredOption("/by");
-                        addTask(tasks, new Deadline(command.getArgument(), by), storage);
+                        addTaskAndRespond(zucc, new Deadline(command.getArgument(), by));
                     }
                     case EVENT -> {
                         command.rejectUnexpectedOptions("/from", "/to");
                         String from = command.getRequiredOption("/from");
                         String to = command.getRequiredOption("/to");
-                        addTask(tasks, new Event(
+                        addTaskAndRespond(zucc, new Event(
                                 command.getArgument(),
                                 from,
-                                to), storage);
+                                to));
                     }
                     }
                 } catch (ZuccException exception) {
