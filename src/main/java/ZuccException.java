@@ -15,4 +15,14 @@ public class ZuccException extends Exception {
     public ZuccException(String message) {
         super(message);
     }
+
+    /**
+     * Creates an input or storage error caused by another failure.
+     *
+     * @param message explanation that can be shown directly to the user
+     * @param cause underlying failure
+     */
+    public ZuccException(String message, Throwable cause) {
+        super(message, cause);
+    }
 }

@@ -1,4 +1,4 @@
-import java.util.ArrayList;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.Scanner;
 
@@ -14,6 +14,9 @@ public class Zucc {
 
     /** Messages are indented one space farther than their separators. */
     private static final int MESSAGE_INDENT = SEPARATOR_INDENT + 1;
+
+    /** File used to preserve tasks between application runs. */
+    private static final Path TASK_FILE_PATH = Path.of("data", "zucc.txt");
 
     /**
      * Prints a response between separators using the required indentation.
@@ -75,9 +78,13 @@ public class Zucc {
      *
      * @param tasks list in which to store the task
      * @param newTask task to add
+     * @param storage persistent storage to update after adding the task
+     * @throws ZuccException if the updated list cannot be saved
      */
-    private static void addTask(List<Task> tasks, Task newTask) {
+    private static void addTask(List<Task> tasks, Task newTask, Storage storage)
+            throws ZuccException {
         tasks.add(newTask);
+        storage.saveTasks(tasks);
         printResponse("Got it. I've added this task:\n  "
                 + newTask
                 + "\nNow you have " + tasks.size() + " tasks in the list.");
@@ -101,9 +108,16 @@ public class Zucc {
                 + "Hello! I'm Zucc.\n"
                 + "What can I do for you?";
 
-        printResponse(greeting);
+        Storage storage = new Storage(TASK_FILE_PATH);
+        List<Task> tasks;
+        try {
+            tasks = storage.loadTasks();
+        } catch (ZuccException exception) {
+            printResponse(exception.getMessage());
+            return;
+        }
 
-        List<Task> tasks = new ArrayList<>();
+        printResponse(greeting);
 
         try (Scanner scanner = new Scanner(System.in)) {
             while (scanner.hasNextLine()) {
@@ -124,6 +138,7 @@ public class Zucc {
                         command.rejectUnexpectedOptions();
                         int taskIndex = parseTaskIndex(command.getArgument(), tasks.size());
                         Task removedTask = tasks.remove(taskIndex);
+                        storage.saveTasks(tasks);
                         printResponse("Noted. I've removed this task:\n  "
                                 + removedTask
                                 + "\nNow you have " + tasks.size() + " tasks in the list.");
@@ -132,6 +147,7 @@ public class Zucc {
                         command.rejectUnexpectedOptions();
                         int taskIndex = parseTaskIndex(command.getArgument(), tasks.size());
                         tasks.get(taskIndex).markAsDone();
+                        storage.saveTasks(tasks);
                         printResponse("Nice! I've marked this task as done:\n  "
                                 + tasks.get(taskIndex));
                     }
@@ -139,17 +155,18 @@ public class Zucc {
                         command.rejectUnexpectedOptions();
                         int taskIndex = parseTaskIndex(command.getArgument(), tasks.size());
                         tasks.get(taskIndex).markAsNotDone();
+                        storage.saveTasks(tasks);
                         printResponse("OK, I've marked this task as not done yet:\n  "
                                 + tasks.get(taskIndex));
                     }
                     case TODO -> {
                         command.rejectUnexpectedOptions();
-                        addTask(tasks, new Todo(command.getArgument()));
+                        addTask(tasks, new Todo(command.getArgument()), storage);
                     }
                     case DEADLINE -> {
                         command.rejectUnexpectedOptions("/by");
                         String by = command.getRequiredOption("/by");
-                        addTask(tasks, new Deadline(command.getArgument(), by));
+                        addTask(tasks, new Deadline(command.getArgument(), by), storage);
                     }
                     case EVENT -> {
                         command.rejectUnexpectedOptions("/from", "/to");
@@ -158,7 +175,7 @@ public class Zucc {
                         addTask(tasks, new Event(
                                 command.getArgument(),
                                 from,
-                                to));
+                                to), storage);
                     }
                     }
                 } catch (ZuccException exception) {
