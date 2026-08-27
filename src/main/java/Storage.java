@@ -57,7 +57,7 @@ public final class Storage {
      * @param tasks tasks to save in their current order
      * @throws ZuccException if the data file cannot be written
      */
-    public void saveTasks(List<Task> tasks) throws ZuccException {
+    public void saveTasks(Iterable<Task> tasks) throws ZuccException {
         List<String> lines = new ArrayList<>();
         for (Task task : tasks) {
             lines.add(task.toStorageString());
