@@ -1,8 +1,6 @@
 import java.nio.file.Path;
 import java.time.LocalDate;
-import java.util.List;
 import java.util.Scanner;
-import java.util.function.Predicate;
 
 /**
  * Owns Zucc's persistent task state and starts the command-line interface.
@@ -20,12 +18,12 @@ public class Zucc {
     /** File used to preserve tasks between application runs. */
     private static final Path TASK_FILE_PATH = Path.of("data", "zucc.txt");
 
-    /** Error shown when a task index does not identify a stored task. */
-    private static final String TASK_NOT_FOUND_ERROR =
+    /** Error shown when a task number is missing or malformed. */
+    private static final String INVALID_TASK_NUMBER_ERROR =
             "Zucc couldn't find that task in the records. Use list to check its number.";
 
     /** Tasks in the current chatbot session. */
-    private final List<Task> tasks;
+    private final TaskList tasks;
 
     /** Persistent storage updated whenever the task state changes. */
     private final Storage storage;
@@ -38,7 +36,7 @@ public class Zucc {
      */
     public Zucc(Path taskFilePath) throws ZuccException {
         storage = new Storage(taskFilePath);
-        tasks = storage.loadTasks();
+        tasks = new TaskList(storage.loadTasks());
     }
 
     /**
@@ -54,52 +52,6 @@ public class Zucc {
     }
 
     /**
-     * Formats the stored tasks as a one-based numbered list.
-     *
-     * @return all stored tasks, one per line
-     */
-    @Override
-    public String toString() {
-        return formatTasksMatching(task -> true);
-    }
-
-    /**
-     * Formats scheduled tasks occurring on a date using their original task numbers.
-     * Preserving those numbers lets users immediately mark or delete a matching task.
-     *
-     * @param date date for which tasks should be shown
-     * @return matching tasks, one per line
-     */
-    public String formatTasksOn(LocalDate date) {
-        return formatTasksMatching(task -> task.occursOn(date));
-    }
-
-    /**
-     * Formats tasks matching a condition while preserving their original task numbers.
-     *
-     * @param condition condition a task must satisfy to be included
-     * @return matching tasks, one per line
-     */
-    private String formatTasksMatching(Predicate<Task> condition) {
-        StringBuilder taskList = new StringBuilder();
-
-        for (int i = 0; i < tasks.size(); i++) {
-            Task task = tasks.get(i);
-            if (!condition.test(task)) {
-                continue;
-            }
-            if (!taskList.isEmpty()) {
-                taskList.append('\n');
-            }
-            taskList.append(i + 1)
-                    .append('.')
-                    .append(task);
-        }
-
-        return taskList.toString();
-    }
-
-    /**
      * Converts a user-provided one-based task number to a list index.
      *
      * @param taskNumberText user-provided task number
@@ -112,21 +64,7 @@ public class Zucc {
         } catch (NumberFormatException ignored) {
             // Malformed input and unavailable task numbers use the same response.
         }
-        throw new ZuccException(TASK_NOT_FOUND_ERROR);
-    }
-
-    /**
-     * Returns a task after ensuring its zero-based index is available.
-     *
-     * @param taskIndex zero-based task index
-     * @return task at the requested index
-     * @throws ZuccException if the index is outside the current task list
-     */
-    private Task getTask(int taskIndex) throws ZuccException {
-        if (taskIndex < 0 || taskIndex >= tasks.size()) {
-            throw new ZuccException(TASK_NOT_FOUND_ERROR);
-        }
-        return tasks.get(taskIndex);
+        throw new ZuccException(INVALID_TASK_NUMBER_ERROR);
     }
 
     /**
@@ -148,8 +86,7 @@ public class Zucc {
      * @throws ZuccException if the index is invalid or the list cannot be saved
      */
     public Task deleteTask(int taskIndex) throws ZuccException {
-        Task removedTask = getTask(taskIndex);
-        tasks.remove(taskIndex);
+        Task removedTask = tasks.delete(taskIndex);
         storage.saveTasks(tasks);
         return removedTask;
     }
@@ -162,8 +99,7 @@ public class Zucc {
      * @throws ZuccException if the index is invalid or the task cannot be marked or saved
      */
     public Task markTask(int taskIndex) throws ZuccException {
-        Task task = getTask(taskIndex);
-        task.markAsDone();
+        Task task = tasks.mark(taskIndex);
         storage.saveTasks(tasks);
         return task;
     }
@@ -176,8 +112,7 @@ public class Zucc {
      * @throws ZuccException if the index is invalid or the task cannot be unmarked or saved
      */
     public Task unmarkTask(int taskIndex) throws ZuccException {
-        Task task = getTask(taskIndex);
-        task.markAsNotDone();
+        Task task = tasks.unmark(taskIndex);
         storage.saveTasks(tasks);
         return task;
     }
@@ -246,13 +181,13 @@ public class Zucc {
                     }
                     case LIST -> {
                         command.requireNoArguments();
-                        printResponse("Here are the tasks in your list:\n" + zucc);
+                        printResponse("Here are the tasks in your list:\n" + zucc.tasks);
                     }
                     case ON -> {
                         command.rejectUnexpectedOptions();
                         LocalDate date = TaskDateTimeFormat.parseDate(command.getArgument());
                         String displayDate = TaskDateTimeFormat.formatDateForDisplay(date);
-                        String matchingTasks = zucc.formatTasksOn(date);
+                        String matchingTasks = zucc.tasks.formatTasksOn(date);
                         if (matchingTasks.isEmpty()) {
                             printResponse("Zucc scanned the timeline and found nothing on "
                                     + displayDate + ". Suspiciously peaceful.");
