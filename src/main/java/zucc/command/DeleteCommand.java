@@ -1,3 +1,11 @@
+package zucc.command;
+
+import zucc.ZuccException;
+import zucc.storage.Storage;
+import zucc.task.Task;
+import zucc.task.TaskList;
+import zucc.ui.Ui;
+
 /**
  * Deletes the task identified by the command's raw task-number argument.
  */

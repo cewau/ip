@@ -1,4 +1,8 @@
+package zucc.task;
+
 import java.time.LocalDate;
+
+import zucc.ZuccException;
 
 /**
  * Represents a task that has no date or time attached to it.
