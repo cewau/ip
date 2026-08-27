@@ -1,5 +1,9 @@
+package zucc.task;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+
+import zucc.ZuccException;
 
 /**
  * Represents a task that takes place between a start and an end date or time.

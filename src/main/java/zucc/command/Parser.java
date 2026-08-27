@@ -1,5 +1,9 @@
+package zucc.command;
+
 import java.util.Arrays;
 import java.util.Iterator;
+
+import zucc.ZuccException;
 
 /**
  * Recognizes raw user input and populates the corresponding concrete command.

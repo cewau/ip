@@ -1,3 +1,5 @@
+package zucc.ui;
+
 import java.util.Scanner;
 
 /**

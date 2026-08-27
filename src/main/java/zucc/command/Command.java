@@ -1,6 +1,13 @@
+package zucc.command;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+
+import zucc.ZuccException;
+import zucc.storage.Storage;
+import zucc.task.TaskList;
+import zucc.ui.Ui;
 
 /**
  * Represents a parsed user command that validates itself before changing application state.

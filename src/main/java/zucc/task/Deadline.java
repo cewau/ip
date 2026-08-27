@@ -1,5 +1,9 @@
+package zucc.task;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+
+import zucc.ZuccException;
 
 /**
  * Represents a task that must be completed by a specific date and time.

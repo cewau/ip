@@ -1,3 +1,5 @@
+package zucc;
+
 /**
  * Signals that Zucc cannot carry out a command because the user's input is invalid.
  * Keeping expected input errors separate from programming errors lets the chatbot

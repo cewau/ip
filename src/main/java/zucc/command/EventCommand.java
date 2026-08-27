@@ -1,3 +1,9 @@
+package zucc.command;
+
+import zucc.ZuccException;
+import zucc.task.Event;
+import zucc.task.Task;
+
 /**
  * Adds an event task from a raw description, start value, and end value.
  */

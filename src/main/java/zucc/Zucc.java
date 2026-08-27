@@ -1,4 +1,11 @@
+package zucc;
+
 import java.nio.file.Path;
+
+import zucc.command.Command;
+import zucc.storage.Storage;
+import zucc.task.TaskList;
+import zucc.ui.Ui;
 
 /**
  * Coordinates Zucc's task state, persistence, parsing, and user interface.

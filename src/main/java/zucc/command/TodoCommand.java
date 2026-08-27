@@ -1,3 +1,9 @@
+package zucc.command;
+
+import zucc.ZuccException;
+import zucc.task.Task;
+import zucc.task.Todo;
+
 /**
  * Adds a to-do task described by the command's raw main argument.
  */

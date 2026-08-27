@@ -1,3 +1,5 @@
+package zucc.task;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -5,11 +7,13 @@ import java.time.format.DateTimeParseException;
 import java.time.format.ResolverStyle;
 import java.util.Locale;
 
+import zucc.ZuccException;
+
 /**
  * Defines how task dates and times are read, displayed, and stored.
  * Keeping this policy in one place gives deadlines and events consistent behavior.
  */
-final class TaskDateTimeFormat {
+public final class TaskDateTimeFormat {
     /** Format accepted when a command requires only a calendar date. */
     private static final DateTimeFormatter DATE_INPUT_FORMAT =
             DateTimeFormatter.ofPattern("d/M/uuuu", Locale.ENGLISH)
@@ -57,7 +61,7 @@ final class TaskDateTimeFormat {
      * @return parsed date
      * @throws ZuccException if the value is blank, malformed, or impossible
      */
-    static LocalDate parseDate(String value) throws ZuccException {
+    public static LocalDate parseDate(String value) throws ZuccException {
         try {
             return LocalDate.parse(value, DATE_INPUT_FORMAT);
         } catch (DateTimeParseException exception) {
@@ -84,7 +88,7 @@ final class TaskDateTimeFormat {
      * @param value date to format
      * @return value in a user-friendly format
      */
-    static String formatDateForDisplay(LocalDate value) {
+    public static String formatDateForDisplay(LocalDate value) {
         return value.format(DATE_DISPLAY_FORMAT);
     }
 

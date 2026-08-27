@@ -1,3 +1,11 @@
+package zucc.command;
+
+import zucc.ZuccException;
+import zucc.storage.Storage;
+import zucc.task.Task;
+import zucc.task.TaskList;
+import zucc.ui.Ui;
+
 /**
  * Provides the shared execution sequence for commands that add one task.
  */

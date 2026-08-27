@@ -1,3 +1,9 @@
+package zucc.command;
+
+import zucc.ZuccException;
+import zucc.task.Deadline;
+import zucc.task.Task;
+
 /**
  * Adds a deadline task from a raw description and {@code /by} value.
  */

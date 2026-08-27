@@ -1,5 +1,9 @@
+package zucc.task;
+
 import java.time.LocalDate;
 import java.util.regex.Pattern;
+
+import zucc.ZuccException;
 
 /**
  * Represents a task and whether it has been completed.
