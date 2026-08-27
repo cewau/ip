@@ -1,20 +1,10 @@
 import java.nio.file.Path;
 import java.time.LocalDate;
-import java.util.Scanner;
 
 /**
  * Owns Zucc's persistent task state and starts the command-line interface.
  */
 public class Zucc {
-    /** A visual separator used to frame the chatbot's messages. */
-    private static final String SEPARATOR = "____________________________________________________________";
-
-    /** The number of spaces before each separator. */
-    private static final int SEPARATOR_INDENT = 4;
-
-    /** Messages are indented one space farther than their separators. */
-    private static final int MESSAGE_INDENT = SEPARATOR_INDENT + 1;
-
     /** File used to preserve tasks between application runs. */
     private static final Path TASK_FILE_PATH = Path.of("data", "zucc.txt");
 
@@ -37,18 +27,6 @@ public class Zucc {
     public Zucc(Path taskFilePath) throws ZuccException {
         storage = new Storage(taskFilePath);
         tasks = new TaskList(storage.loadTasks());
-    }
-
-    /**
-     * Prints a response between separators using the required indentation.
-     * Multiline responses, such as the banner and greeting, are indented line by line.
-     *
-     * @param message response to print
-     */
-    private static void printResponse(String message) {
-        System.out.print(SEPARATOR.indent(SEPARATOR_INDENT));
-        System.out.print(message.indent(MESSAGE_INDENT));
-        System.out.print(SEPARATOR.indent(SEPARATOR_INDENT));
     }
 
     /**
@@ -127,17 +105,19 @@ public class Zucc {
     }
 
     /**
-     * Adds a task through the stateful chatbot and prints the CLI confirmation.
+     * Adds a task through the stateful chatbot and creates the CLI confirmation.
      *
      * @param zucc chatbot instance that owns the task state
      * @param newTask task to add
+     * @return confirmation describing the added task and updated task count
      * @throws ZuccException if the updated list cannot be saved
      */
-    private static void addTaskAndRespond(Zucc zucc, Task newTask) throws ZuccException {
+    private static String addTaskAndCreateResponse(Zucc zucc, Task newTask)
+            throws ZuccException {
         zucc.addTask(newTask);
-        printResponse("Got it. I've added this task:\n  "
+        return "Got it. I've added this task:\n  "
                 + newTask
-                + "\nNow you have " + zucc.getTaskCount() + " tasks in the list.");
+                + "\nNow you have " + zucc.getTaskCount() + " tasks in the list.";
     }
 
     /**
@@ -147,41 +127,30 @@ public class Zucc {
      * @param args command-line arguments; not used by this application
      */
     public static void main(String[] args) {
-        String banner = " ______                \n"
-                + "|___  /                \n"
-                + "   / / _   _  ___ ___  \n"
-                + "  / / | | | |/ __/ __| \n"
-                + " / /__| |_| | (_| (__  \n"
-                + "/_____|\\__,_|\\___\\___|\n";
+        try (Ui ui = new Ui()) {
+            Zucc zucc;
+            try {
+                zucc = new Zucc(TASK_FILE_PATH);
+            } catch (ZuccException exception) {
+                ui.showMessage(exception.getMessage());
+                return;
+            }
 
-        String greeting = banner
-                + "Hello! I'm Zucc.\n"
-                + "What can I do for you?";
+            ui.showGreeting();
 
-        Zucc zucc;
-        try {
-            zucc = new Zucc(TASK_FILE_PATH);
-        } catch (ZuccException exception) {
-            printResponse(exception.getMessage());
-            return;
-        }
-
-        printResponse(greeting);
-
-        try (Scanner scanner = new Scanner(System.in)) {
-            while (scanner.hasNextLine()) {
+            while (ui.hasNextCommand()) {
                 try {
-                    ParsedCommand command = new ParsedCommand(scanner.nextLine());
+                    ParsedCommand command = new ParsedCommand(ui.readCommand());
 
                     switch (command.getType()) {
                     case BYE -> {
                         command.requireNoArguments();
-                        printResponse("Bye. Hope to see you again soon!");
+                        ui.showMessage("Bye. Hope to see you again soon!");
                         return;
                     }
                     case LIST -> {
                         command.requireNoArguments();
-                        printResponse("Here are the tasks in your list:\n" + zucc.tasks);
+                        ui.showMessage("Here are the tasks in your list:\n" + zucc.tasks);
                     }
                     case ON -> {
                         command.rejectUnexpectedOptions();
@@ -189,10 +158,10 @@ public class Zucc {
                         String displayDate = TaskDateTimeFormat.formatDateForDisplay(date);
                         String matchingTasks = zucc.tasks.formatTasksOn(date);
                         if (matchingTasks.isEmpty()) {
-                            printResponse("Zucc scanned the timeline and found nothing on "
+                            ui.showMessage("Zucc scanned the timeline and found nothing on "
                                     + displayDate + ". Suspiciously peaceful.");
                         } else {
-                            printResponse("Here are the tasks on " + displayDate + ":\n"
+                            ui.showMessage("Here are the tasks on " + displayDate + ":\n"
                                     + matchingTasks);
                         }
                     }
@@ -200,7 +169,7 @@ public class Zucc {
                         command.rejectUnexpectedOptions();
                         int taskIndex = parseTaskIndex(command.getArgument());
                         Task removedTask = zucc.deleteTask(taskIndex);
-                        printResponse("Noted. I've removed this task:\n  "
+                        ui.showMessage("Noted. I've removed this task:\n  "
                                 + removedTask
                                 + "\nNow you have " + zucc.getTaskCount()
                                 + " tasks in the list.");
@@ -209,37 +178,37 @@ public class Zucc {
                         command.rejectUnexpectedOptions();
                         int taskIndex = parseTaskIndex(command.getArgument());
                         Task markedTask = zucc.markTask(taskIndex);
-                        printResponse("Nice! I've marked this task as done:\n  "
+                        ui.showMessage("Nice! I've marked this task as done:\n  "
                                 + markedTask);
                     }
                     case UNMARK -> {
                         command.rejectUnexpectedOptions();
                         int taskIndex = parseTaskIndex(command.getArgument());
                         Task unmarkedTask = zucc.unmarkTask(taskIndex);
-                        printResponse("OK, I've marked this task as not done yet:\n  "
+                        ui.showMessage("OK, I've marked this task as not done yet:\n  "
                                 + unmarkedTask);
                     }
                     case TODO -> {
                         command.rejectUnexpectedOptions();
-                        addTaskAndRespond(zucc, new Todo(command.getArgument()));
+                        ui.showMessage(addTaskAndCreateResponse(
+                                zucc, new Todo(command.getArgument())));
                     }
                     case DEADLINE -> {
                         command.rejectUnexpectedOptions("/by");
                         String by = command.getRequiredOption("/by");
-                        addTaskAndRespond(zucc, new Deadline(command.getArgument(), by));
+                        ui.showMessage(addTaskAndCreateResponse(
+                                zucc, new Deadline(command.getArgument(), by)));
                     }
                     case EVENT -> {
                         command.rejectUnexpectedOptions("/from", "/to");
                         String from = command.getRequiredOption("/from");
                         String to = command.getRequiredOption("/to");
-                        addTaskAndRespond(zucc, new Event(
-                                command.getArgument(),
-                                from,
-                                to));
+                        ui.showMessage(addTaskAndCreateResponse(
+                                zucc, new Event(command.getArgument(), from, to)));
                     }
                     }
                 } catch (ZuccException exception) {
-                    printResponse(exception.getMessage());
+                    ui.showMessage(exception.getMessage());
                 }
             }
         }
