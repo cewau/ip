@@ -1,21 +1,14 @@
-import java.util.Arrays;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
 /**
- * Parses and holds a command type and the values extracted from one input line.
+ * Holds a command type and the values that {@link Parser} extracted from one input line.
  * This class does not know which options belong to each command; callers declare
  * the allowed options when handling the command.
  */
 public final class ParsedCommand {
-    /** Message used when the first word does not identify a supported command. */
-    private static final String UNKNOWN_COMMAND_ERROR =
-            "Zucc's algorithm doesn't recognize that command. "
-                    + "Try todo, deadline, event, list, on, mark, unmark, delete, or bye.";
-
     /** The command word represented as a known enum value. */
     private final CommandType type;
 
@@ -26,70 +19,15 @@ public final class ParsedCommand {
     private final Map<String, String> options;
 
     /**
-     * Creates a parsed command from a command word, its main argument, and any
-     * named options.
-     * Every space-delimited token beginning with a slash starts an option, whose
-     * value continues until the next option separator. Empty tokens preserve
-     * repeated spaces inside arguments and option values.
+     * Creates a parsed command from values produced by {@link Parser}.
      *
-     * @param input complete line entered by the user
-     * @throws ZuccException if the command is unknown or an option is duplicated
+     * @param type recognized command type
+     * @param argument free-form main argument
+     * @param options named option values indexed by their separators
      */
-    public ParsedCommand(String input) throws ZuccException {
-        String normalizedInput = input.strip();
-        Iterator<String> words = Arrays.asList(normalizedInput.split(" ", -1)).iterator();
-        String keyword = words.next();
-        CommandType type = null;
-        for (CommandType candidate : CommandType.values()) {
-            if (candidate.getKeyword().equals(keyword)) {
-                type = candidate;
-                break;
-            }
-        }
-        if (type == null) {
-            throw new ZuccException(UNKNOWN_COMMAND_ERROR);
-        }
-
-        String mainArgument = "";
-        Map<String, String> options = new LinkedHashMap<>();
-        String currentOption = null;
-        StringBuilder currentValue = new StringBuilder();
-        boolean hasValueTokens = false;
-
-        while (true) {
-            boolean inputFinished = !words.hasNext();
-            String word = inputFinished ? "" : words.next();
-            boolean isOption = !inputFinished
-                    && word.startsWith("/")
-                    && word.length() > 1;
-
-            if (inputFinished || isOption) {
-                String completedValue = currentValue.toString().strip();
-                if (currentOption == null) {
-                    mainArgument = completedValue;
-                } else if (options.putIfAbsent(currentOption, completedValue) != null) {
-                    throw new ZuccException("Zucc can't use " + currentOption
-                            + " more than once in one command.");
-                }
-
-                if (inputFinished) {
-                    break;
-                }
-                currentOption = word;
-                currentValue.setLength(0);
-                hasValueTokens = false;
-                continue;
-            }
-
-            if (hasValueTokens) {
-                currentValue.append(' ');
-            }
-            currentValue.append(word);
-            hasValueTokens = true;
-        }
-
+    ParsedCommand(CommandType type, String argument, Map<String, String> options) {
         this.type = type;
-        this.argument = mainArgument;
+        this.argument = argument;
         this.options = Collections.unmodifiableMap(new LinkedHashMap<>(options));
     }
 

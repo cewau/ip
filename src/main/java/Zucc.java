@@ -8,10 +8,6 @@ public class Zucc {
     /** File used to preserve tasks between application runs. */
     private static final Path TASK_FILE_PATH = Path.of("data", "zucc.txt");
 
-    /** Error shown when a task number is missing or malformed. */
-    private static final String INVALID_TASK_NUMBER_ERROR =
-            "Zucc couldn't find that task in the records. Use list to check its number.";
-
     /** Tasks in the current chatbot session. */
     private final TaskList tasks;
 
@@ -27,22 +23,6 @@ public class Zucc {
     public Zucc(Path taskFilePath) throws ZuccException {
         storage = new Storage(taskFilePath);
         tasks = new TaskList(storage.loadTasks());
-    }
-
-    /**
-     * Converts a user-provided one-based task number to a list index.
-     *
-     * @param taskNumberText user-provided task number
-     * @return the corresponding zero-based array index
-     * @throws ZuccException if the number is missing or malformed
-     */
-    private static int parseTaskIndex(String taskNumberText) throws ZuccException {
-        try {
-            return Integer.parseInt(taskNumberText) - 1;
-        } catch (NumberFormatException ignored) {
-            // Malformed input and unavailable task numbers use the same response.
-        }
-        throw new ZuccException(INVALID_TASK_NUMBER_ERROR);
     }
 
     /**
@@ -140,7 +120,7 @@ public class Zucc {
 
             while (ui.hasNextCommand()) {
                 try {
-                    ParsedCommand command = new ParsedCommand(ui.readCommand());
+                    ParsedCommand command = Parser.parse(ui.readCommand());
 
                     switch (command.getType()) {
                     case BYE -> {
@@ -167,7 +147,7 @@ public class Zucc {
                     }
                     case DELETE -> {
                         command.rejectUnexpectedOptions();
-                        int taskIndex = parseTaskIndex(command.getArgument());
+                        int taskIndex = Parser.parseTaskIndex(command.getArgument());
                         Task removedTask = zucc.deleteTask(taskIndex);
                         ui.showMessage("Noted. I've removed this task:\n  "
                                 + removedTask
@@ -176,14 +156,14 @@ public class Zucc {
                     }
                     case MARK -> {
                         command.rejectUnexpectedOptions();
-                        int taskIndex = parseTaskIndex(command.getArgument());
+                        int taskIndex = Parser.parseTaskIndex(command.getArgument());
                         Task markedTask = zucc.markTask(taskIndex);
                         ui.showMessage("Nice! I've marked this task as done:\n  "
                                 + markedTask);
                     }
                     case UNMARK -> {
                         command.rejectUnexpectedOptions();
-                        int taskIndex = parseTaskIndex(command.getArgument());
+                        int taskIndex = Parser.parseTaskIndex(command.getArgument());
                         Task unmarkedTask = zucc.unmarkTask(taskIndex);
                         ui.showMessage("OK, I've marked this task as not done yet:\n  "
                                 + unmarkedTask);
