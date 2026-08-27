@@ -1,6 +1,8 @@
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+
 /**
  * Represents a task that takes place between a start and an end date or time.
- * Both values are stored as text so that users may choose a convenient format.
  */
 public class Event extends Task {
     /** Short identifier used when displaying and storing events. */
@@ -11,24 +13,31 @@ public class Event extends Task {
             "Zucc needs more data: add an event description "
                     + "followed by /from and /to times.";
 
-    /** The user-provided date or time at which the event starts. */
-    private final String from;
+    /** Error used when an event ends before it starts. */
+    private static final String INVALID_EVENT_RANGE_ERROR =
+            "Zucc can't schedule an event that ends before it starts.";
 
-    /** The user-provided date or time at which the event ends. */
-    private final String to;
+    /** Date and time at which the event starts. */
+    private final LocalDateTime from;
+
+    /** Date and time at which the event ends. */
+    private final LocalDateTime to;
 
     /**
      * Creates an incomplete event with the given description and time range.
      *
      * @param description description of the event
-     * @param from user-provided start date or time
-     * @param to user-provided end date or time
-     * @throws ZuccException if the description, start, or end is blank
+     * @param from start date and time in {@code d/M/yyyy HHmm} format
+     * @param to end date and time in {@code d/M/yyyy HHmm} format
+     * @throws ZuccException if a required value or date range is invalid
      */
     public Event(String description, String from, String to) throws ZuccException {
         super(requireNonBlank(description, INVALID_EVENT_ERROR));
-        this.from = requireNonBlank(from, INVALID_EVENT_ERROR);
-        this.to = requireNonBlank(to, INVALID_EVENT_ERROR);
+        this.from = TaskDateTimeFormat.parse(
+                requireNonBlank(from, INVALID_EVENT_ERROR));
+        this.to = TaskDateTimeFormat.parse(
+                requireNonBlank(to, INVALID_EVENT_ERROR));
+        requireValidRange();
     }
 
     /**
@@ -43,8 +52,35 @@ public class Event extends Task {
             throw new ZuccException("Invalid stored event.");
         }
         super(fields[2], fields[1]);
-        this.from = requireNonBlank(fields[3], INVALID_EVENT_ERROR);
-        this.to = requireNonBlank(fields[4], INVALID_EVENT_ERROR);
+        this.from = TaskDateTimeFormat.parse(
+                requireNonBlank(fields[3], INVALID_EVENT_ERROR));
+        this.to = TaskDateTimeFormat.parse(
+                requireNonBlank(fields[4], INVALID_EVENT_ERROR));
+        requireValidRange();
+    }
+
+    /**
+     * Ensures that this event's end does not precede its start.
+     *
+     * @throws ZuccException if the event has a negative duration
+     */
+    private void requireValidRange() throws ZuccException {
+        if (to.isBefore(from)) {
+            throw new ZuccException(INVALID_EVENT_RANGE_ERROR);
+        }
+    }
+
+    /**
+     * Reports whether any part of this event occurs on a given date.
+     * Both the start and end dates are included.
+     *
+     * @param date date to check
+     * @return {@code true} if the event occurs on the date
+     */
+    @Override
+    public boolean occursOn(LocalDate date) {
+        return !date.isBefore(from.toLocalDate())
+                && !date.isAfter(to.toLocalDate());
     }
 
     /**
@@ -54,7 +90,11 @@ public class Event extends Task {
      */
     @Override
     protected String[] getStorageFields() {
-        return new String[]{TYPE_CODE, from, to};
+        return new String[]{
+            TYPE_CODE,
+            TaskDateTimeFormat.formatForStorage(from),
+            TaskDateTimeFormat.formatForStorage(to)
+        };
     }
 
     /**
@@ -65,6 +105,7 @@ public class Event extends Task {
     @Override
     public String toString() {
         return "[" + TYPE_CODE + "]" + super.toString()
-                + " (from: " + from + " to: " + to + ")";
+                + " (from: " + TaskDateTimeFormat.formatForDisplay(from)
+                + " to: " + TaskDateTimeFormat.formatForDisplay(to) + ")";
     }
 }

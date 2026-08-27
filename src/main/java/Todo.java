@@ -1,3 +1,5 @@
+import java.time.LocalDate;
+
 /**
  * Represents a task that has no date or time attached to it.
  */
@@ -31,6 +33,17 @@ public class Todo extends Task {
             throw new ZuccException("Invalid stored to-do.");
         }
         super(fields[2], fields[1]);
+    }
+
+    /**
+     * Reports that a to-do does not occur on a specific date.
+     *
+     * @param date date to check
+     * @return always {@code false}
+     */
+    @Override
+    public boolean occursOn(LocalDate date) {
+        return false;
     }
 
     /**

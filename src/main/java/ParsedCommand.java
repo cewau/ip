@@ -14,7 +14,7 @@ public final class ParsedCommand {
     /** Message used when the first word does not identify a supported command. */
     private static final String UNKNOWN_COMMAND_ERROR =
             "Zucc's algorithm doesn't recognize that command. "
-                    + "Try todo, deadline, event, list, mark, unmark, delete, or bye.";
+                    + "Try todo, deadline, event, list, on, mark, unmark, delete, or bye.";
 
     /** The command word represented as a known enum value. */
     private final CommandType type;
