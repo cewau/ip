@@ -1,3 +1,4 @@
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
@@ -9,6 +10,11 @@ import java.util.Locale;
  * Keeping this policy in one place gives deadlines and events consistent behavior.
  */
 final class TaskDateTimeFormat {
+    /** Format accepted when a command requires only a calendar date. */
+    private static final DateTimeFormatter DATE_INPUT_FORMAT =
+            DateTimeFormatter.ofPattern("d/M/uuuu", Locale.ENGLISH)
+                    .withResolverStyle(ResolverStyle.STRICT);
+
     /** Format accepted in commands and used in storage. */
     private static final DateTimeFormatter INPUT_FORMAT =
             DateTimeFormatter.ofPattern("d/M/uuuu HHmm", Locale.ENGLISH)
@@ -17,6 +23,10 @@ final class TaskDateTimeFormat {
     /** User-friendly format used in chatbot responses. */
     private static final DateTimeFormatter DISPLAY_FORMAT =
             DateTimeFormatter.ofPattern("MMM dd uuuu, h:mma", Locale.ENGLISH);
+
+    /** User-friendly format used when displaying only a calendar date. */
+    private static final DateTimeFormatter DATE_DISPLAY_FORMAT =
+            DateTimeFormatter.ofPattern("MMM dd uuuu", Locale.ENGLISH);
 
     /** Prevents instantiation of this formatting utility. */
     private TaskDateTimeFormat() {
@@ -41,6 +51,24 @@ final class TaskDateTimeFormat {
     }
 
     /**
+     * Parses a calendar date used to find scheduled tasks.
+     *
+     * @param value date in {@code d/M/yyyy} format
+     * @return parsed date
+     * @throws ZuccException if the value is blank, malformed, or impossible
+     */
+    static LocalDate parseDate(String value) throws ZuccException {
+        try {
+            return LocalDate.parse(value, DATE_INPUT_FORMAT);
+        } catch (DateTimeParseException exception) {
+            throw new ZuccException(
+                    "Zucc can't understand that date. "
+                            + "Use d/M/yyyy, for example 2/12/2019.",
+                    exception);
+        }
+    }
+
+    /**
      * Formats a date and time for display to the user.
      *
      * @param value date and time to format
@@ -48,6 +76,16 @@ final class TaskDateTimeFormat {
      */
     static String formatForDisplay(LocalDateTime value) {
         return value.format(DISPLAY_FORMAT);
+    }
+
+    /**
+     * Formats a calendar date for display to the user.
+     *
+     * @param value date to format
+     * @return value in a user-friendly format
+     */
+    static String formatDateForDisplay(LocalDate value) {
+        return value.format(DATE_DISPLAY_FORMAT);
     }
 
     /**

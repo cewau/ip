@@ -34,6 +34,20 @@ Example:
 [E][ ] project meeting (from: Dec 03 2019, 2:00PM to: Dec 03 2019, 3:30PM)
 ```
 
+## Viewing tasks on a date
+
+Use the `on` command with a date in `d/M/yyyy` format to see deadlines due
+that day and events occurring that day.
+
+Example:
+
+`on 3/12/2019`
+
+```
+Here are the tasks on Dec 03 2019:
+2.[E][ ] project meeting (from: Dec 03 2019, 2:00PM to: Dec 03 2019, 3:30PM)
+```
+
 
 ## Feature XYZ
 

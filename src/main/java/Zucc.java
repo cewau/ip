@@ -1,6 +1,8 @@
 import java.nio.file.Path;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Scanner;
+import java.util.function.Predicate;
 
 /**
  * Owns Zucc's persistent task state and starts the command-line interface.
@@ -58,15 +60,40 @@ public class Zucc {
      */
     @Override
     public String toString() {
+        return formatTasksMatching(task -> true);
+    }
+
+    /**
+     * Formats scheduled tasks occurring on a date using their original task numbers.
+     * Preserving those numbers lets users immediately mark or delete a matching task.
+     *
+     * @param date date for which tasks should be shown
+     * @return matching tasks, one per line
+     */
+    public String formatTasksOn(LocalDate date) {
+        return formatTasksMatching(task -> task.occursOn(date));
+    }
+
+    /**
+     * Formats tasks matching a condition while preserving their original task numbers.
+     *
+     * @param condition condition a task must satisfy to be included
+     * @return matching tasks, one per line
+     */
+    private String formatTasksMatching(Predicate<Task> condition) {
         StringBuilder taskList = new StringBuilder();
 
         for (int i = 0; i < tasks.size(); i++) {
-            if (i > 0) {
+            Task task = tasks.get(i);
+            if (!condition.test(task)) {
+                continue;
+            }
+            if (!taskList.isEmpty()) {
                 taskList.append('\n');
             }
             taskList.append(i + 1)
                     .append('.')
-                    .append(tasks.get(i));
+                    .append(task);
         }
 
         return taskList.toString();
@@ -220,6 +247,19 @@ public class Zucc {
                     case LIST -> {
                         command.requireNoArguments();
                         printResponse("Here are the tasks in your list:\n" + zucc);
+                    }
+                    case ON -> {
+                        command.rejectUnexpectedOptions();
+                        LocalDate date = TaskDateTimeFormat.parseDate(command.getArgument());
+                        String displayDate = TaskDateTimeFormat.formatDateForDisplay(date);
+                        String matchingTasks = zucc.formatTasksOn(date);
+                        if (matchingTasks.isEmpty()) {
+                            printResponse("Zucc scanned the timeline and found nothing on "
+                                    + displayDate + ". Suspiciously peaceful.");
+                        } else {
+                            printResponse("Here are the tasks on " + displayDate + ":\n"
+                                    + matchingTasks);
+                        }
                     }
                     case DELETE -> {
                         command.rejectUnexpectedOptions();

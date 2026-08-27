@@ -1,3 +1,4 @@
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 /**
@@ -67,6 +68,19 @@ public class Event extends Task {
         if (to.isBefore(from)) {
             throw new ZuccException(INVALID_EVENT_RANGE_ERROR);
         }
+    }
+
+    /**
+     * Reports whether any part of this event occurs on a given date.
+     * Both the start and end dates are included.
+     *
+     * @param date date to check
+     * @return {@code true} if the event occurs on the date
+     */
+    @Override
+    public boolean occursOn(LocalDate date) {
+        return !date.isBefore(from.toLocalDate())
+                && !date.isAfter(to.toLocalDate());
     }
 
     /**

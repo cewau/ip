@@ -1,3 +1,4 @@
+import java.time.LocalDate;
 import java.util.regex.Pattern;
 
 /**
@@ -92,6 +93,14 @@ public abstract class Task {
     public String getStatusIcon() {
         return isDone ? "X" : " ";
     }
+
+    /**
+     * Reports whether this task occurs on a given date.
+     *
+     * @param date date to check
+     * @return {@code true} if this task occurs on the date
+     */
+    public abstract boolean occursOn(LocalDate date);
 
     /**
      * Marks this task as completed.
