@@ -1,42 +1,37 @@
 import java.util.Arrays;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.Map;
 
 /**
- * Converts raw user input into values that the command-handling layer can use.
+ * Recognizes raw user input and populates the corresponding concrete command.
+ * TODO: Deliberate whether parsing merits a separate class or should be nested
+ * inside Command to keep command creation and parsing in one place.
  */
-public final class Parser {
+final class Parser {
     /** Message used when the first word does not identify a supported command. */
     private static final String UNKNOWN_COMMAND_ERROR =
             "Zucc's algorithm doesn't recognize that command. "
                     + "Try todo, deadline, event, list, on, mark, unmark, delete, or bye.";
-
-    /** Error shown when a task number is missing or malformed. */
-    private static final String INVALID_TASK_NUMBER_ERROR =
-            "Zucc couldn't find that task in the records. Use list to check its number.";
 
     /** Prevents creation of a utility class that contains only parsing operations. */
     private Parser() {
     }
 
     /**
-     * Parses a complete input line into a recognized command and its supplied values.
+     * Parses a complete input line directly into a concrete command.
      * Every space-delimited token beginning with a slash starts an option, whose
      * value continues until the next option separator. Empty tokens preserve
      * repeated spaces inside arguments and option values.
      *
      * @param input complete line entered by the user
      * @return parsed command
-     * @throws ZuccException if the command is unknown or an option is duplicated
+     * @throws ZuccException if the command is unknown or an option is unsupported
+     *         or duplicated
      */
-    public static ParsedCommand parse(String input) throws ZuccException {
+    static Command parse(String input) throws ZuccException {
         String normalizedInput = input.strip();
         Iterator<String> words = Arrays.asList(normalizedInput.split(" ", -1)).iterator();
-        CommandType type = parseCommandType(words.next());
+        Command command = createCommand(words.next());
 
-        String mainArgument = "";
-        Map<String, String> options = new LinkedHashMap<>();
         String currentOption = null;
         StringBuilder currentValue = new StringBuilder();
         boolean hasValueTokens = false;
@@ -51,10 +46,9 @@ public final class Parser {
             if (inputFinished || isOption) {
                 String completedValue = currentValue.toString().strip();
                 if (currentOption == null) {
-                    mainArgument = completedValue;
-                } else if (options.putIfAbsent(currentOption, completedValue) != null) {
-                    throw new ZuccException("Zucc can't use " + currentOption
-                            + " more than once in one command.");
+                    command.setArgument(completedValue);
+                } else {
+                    command.addOption(currentOption, completedValue);
                 }
 
                 if (inputFinished) {
@@ -73,40 +67,28 @@ public final class Parser {
             hasValueTokens = true;
         }
 
-        return new ParsedCommand(type, mainArgument, options);
+        return command;
     }
 
     /**
-     * Converts a user-provided one-based task number to a list index.
-     * Bounds validation remains the responsibility of {@link TaskList}, which
-     * knows the current number of tasks.
-     *
-     * @param taskNumberText user-provided task number
-     * @return corresponding zero-based list index
-     * @throws ZuccException if the number is missing or malformed
-     */
-    public static int parseTaskIndex(String taskNumberText) throws ZuccException {
-        try {
-            return Integer.parseInt(taskNumberText) - 1;
-        } catch (NumberFormatException ignored) {
-            // Malformed input and unavailable task numbers use the same response.
-        }
-        throw new ZuccException(INVALID_TASK_NUMBER_ERROR);
-    }
-
-    /**
-     * Finds the command type represented by a user-entered keyword.
+     * Creates the concrete command associated with a recognized keyword.
      *
      * @param keyword first word of the input line
-     * @return recognized command type
+     * @return empty command ready to receive its raw argument and options
      * @throws ZuccException if the keyword does not identify a supported command
      */
-    private static CommandType parseCommandType(String keyword) throws ZuccException {
-        for (CommandType candidate : CommandType.values()) {
-            if (candidate.getKeyword().equals(keyword)) {
-                return candidate;
-            }
-        }
-        throw new ZuccException(UNKNOWN_COMMAND_ERROR);
+    private static Command createCommand(String keyword) throws ZuccException {
+        return switch (keyword) {
+        case "todo" -> new TodoCommand();
+        case "deadline" -> new DeadlineCommand();
+        case "event" -> new EventCommand();
+        case "list" -> new ListCommand();
+        case "on" -> new OnCommand();
+        case "mark" -> new MarkCommand();
+        case "unmark" -> new UnmarkCommand();
+        case "delete" -> new DeleteCommand();
+        case "bye" -> new ExitCommand();
+        default -> throw new ZuccException(UNKNOWN_COMMAND_ERROR);
+        };
     }
 }

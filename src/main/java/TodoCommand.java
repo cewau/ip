@@ -1,0 +1,20 @@
+/**
+ * Adds a to-do task described by the command's raw main argument.
+ */
+public final class TodoCommand extends AddTaskCommand {
+    /** Creates a to-do command awaiting values from Parser. */
+    TodoCommand() {
+        super("todo");
+    }
+
+    /**
+     * Validates the required description and constructs a to-do task.
+     *
+     * @return constructed to-do task
+     * @throws ZuccException if the description is blank
+     */
+    @Override
+    protected Task createTask() throws ZuccException {
+        return new Todo(requireArgument("a description"));
+    }
+}
