@@ -23,7 +23,7 @@ public class Zucc {
     /**
      * Creates a chatbot whose state is backed by the given data file.
      *
-     * @param taskFilePath file from which tasks are loaded and to which they are saved
+     * @param taskFilePath file from which tasks are loaded and to which they are saved.
      * @throws ZuccException if existing task data cannot be loaded
      */
     public Zucc(Path taskFilePath) throws ZuccException {
@@ -34,7 +34,7 @@ public class Zucc {
     /**
      * Greets the user and handles commands until input ends or the user enters {@code bye}.
      *
-     * @param ui user interface for this interactive session
+     * @param ui user interface for this interactive session.
      */
     public void run(Ui ui) {
         ui.showGreeting();
@@ -54,7 +54,7 @@ public class Zucc {
     /**
      * Creates the application's resources and starts Zucc.
      *
-     * @param args command-line arguments; not used by this application
+     * @param args command-line arguments; not used by this application.
      */
     public static void main(String[] args) {
         try (Ui ui = new Ui()) {

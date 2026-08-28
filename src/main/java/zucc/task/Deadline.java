@@ -18,25 +18,25 @@ public class Deadline extends Task {
                     + "followed by /by and a due date.";
 
     /** Date and time by which the task should be completed. */
-    private final LocalDateTime by;
+    private final LocalDateTime dueDateTime;
 
     /**
      * Creates an incomplete deadline with the given description and due date.
      *
-     * @param description description of the task
-     * @param by due date and time in {@code d/M/yyyy HHmm} format
+     * @param description description of the task.
+     * @param by due date and time in {@code d/M/yyyy HHmm} format.
      * @throws ZuccException if the description is blank or the due date is invalid
      */
     public Deadline(String description, String by) throws ZuccException {
         super(requireNonBlank(description, INVALID_DEADLINE_ERROR));
-        this.by = TaskDateTimeFormat.parse(
+        this.dueDateTime = TaskDateTimeFormat.parse(
                 requireNonBlank(by, INVALID_DEADLINE_ERROR));
     }
 
     /**
      * Reconstructs a deadline from decoded storage fields.
      *
-     * @param fields decoded type, status, description, and deadline
+     * @param fields decoded type, status, description, and deadline.
      * @throws ZuccException if the fields do not describe a valid deadline
      */
     Deadline(String[] fields) throws ZuccException {
@@ -44,19 +44,19 @@ public class Deadline extends Task {
             throw new ZuccException("Invalid stored deadline.");
         }
         super(fields[2], fields[1]);
-        this.by = TaskDateTimeFormat.parse(
+        this.dueDateTime = TaskDateTimeFormat.parse(
                 requireNonBlank(fields[3], INVALID_DEADLINE_ERROR));
     }
 
     /**
      * Reports whether this deadline is due on a given date.
      *
-     * @param date date to check
+     * @param date date to check.
      * @return {@code true} if the deadline is due on the date
      */
     @Override
     public boolean occursOn(LocalDate date) {
-        return by.toLocalDate().equals(date);
+        return dueDateTime.toLocalDate().equals(date);
     }
 
     /**
@@ -66,7 +66,7 @@ public class Deadline extends Task {
      */
     @Override
     protected String[] getStorageFields() {
-        return new String[]{TYPE_CODE, TaskDateTimeFormat.formatForStorage(by)};
+        return new String[] {TYPE_CODE, TaskDateTimeFormat.formatForStorage(dueDateTime)};
     }
 
     /**
@@ -77,6 +77,6 @@ public class Deadline extends Task {
     @Override
     public String toString() {
         return "[" + TYPE_CODE + "]" + super.toString()
-                + " (by: " + TaskDateTimeFormat.formatForDisplay(by) + ")";
+                + " (by: " + TaskDateTimeFormat.formatForDisplay(dueDateTime) + ")";
     }
 }

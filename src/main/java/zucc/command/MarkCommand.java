@@ -18,9 +18,9 @@ public final class MarkCommand extends Command {
     /**
      * Validates the task number before marking and persisting the selected task.
      *
-     * @param tasks task collection to update
-     * @param ui user interface through which confirmation is shown
-     * @param storage persistent storage to update
+     * @param tasks task collection to update.
+     * @param ui user interface through which confirmation is shown.
+     * @param storage persistent storage to update.
      * @throws ZuccException if the task cannot be marked or persisted
      */
     @Override

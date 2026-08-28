@@ -18,7 +18,7 @@ public class Todo extends Task {
     /**
      * Creates an incomplete to-do with the given description.
      *
-     * @param description description of the task
+     * @param description description of the task.
      * @throws ZuccException if the description is blank
      */
     public Todo(String description) throws ZuccException {
@@ -29,7 +29,7 @@ public class Todo extends Task {
      * Reconstructs a to-do from decoded storage fields.
      * The field-count check runs before the superclass constructor so indexing is safe.
      *
-     * @param fields decoded type, status, and description
+     * @param fields decoded type, status, and description.
      * @throws ZuccException if the fields do not describe a valid to-do
      */
     Todo(String[] fields) throws ZuccException {
@@ -42,7 +42,7 @@ public class Todo extends Task {
     /**
      * Reports that a to-do does not occur on a specific date.
      *
-     * @param date date to check
+     * @param date date to check.
      * @return always {@code false}
      */
     @Override
@@ -57,7 +57,7 @@ public class Todo extends Task {
      */
     @Override
     protected String[] getStorageFields() {
-        return new String[]{TYPE_CODE};
+        return new String[] {TYPE_CODE};
     }
 
     /**

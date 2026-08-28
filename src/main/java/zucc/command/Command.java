@@ -34,8 +34,8 @@ public abstract class Command {
     /**
      * Creates a command before Parser supplies its raw values.
      *
-     * @param keyword user-entered keyword represented by this command
-     * @param allowedOptions named options accepted by this command
+     * @param keyword user-entered keyword represented by this command.
+     * @param allowedOptions named options accepted by this command.
      */
     protected Command(String keyword, String... allowedOptions) {
         this.keyword = keyword;
@@ -47,7 +47,7 @@ public abstract class Command {
      * This is the public creation boundary, so callers cannot observe a command
      * while Parser is still populating it.
      *
-     * @param input complete line entered by the user
+     * @param input complete line entered by the user.
      * @return completely parsed command
      * @throws ZuccException if the keyword is unknown or an option is unsupported
      *         or duplicated
@@ -59,7 +59,7 @@ public abstract class Command {
     /**
      * Supplies the command's free-form main argument during parsing.
      *
-     * @param argument parsed main argument
+     * @param argument parsed main argument.
      */
     final void setArgument(String argument) {
         this.argument = argument;
@@ -68,8 +68,8 @@ public abstract class Command {
     /**
      * Supplies a named option during parsing after rejecting duplicate or unsupported names.
      *
-     * @param name option separator, including its leading slash
-     * @param value raw option value
+     * @param name option separator, including its leading slash.
+     * @param value raw option value.
      * @throws ZuccException if the option is duplicated or unsupported
      */
     final void addOption(String name, String value) throws ZuccException {
@@ -87,7 +87,7 @@ public abstract class Command {
     /**
      * Returns a required option value after ensuring it contains data.
      *
-     * @param optionName required option separator
+     * @param optionName required option separator.
      * @return supplied option value
      * @throws ZuccException if the option was absent or blank
      */
@@ -98,7 +98,7 @@ public abstract class Command {
     /**
      * Returns the main argument after ensuring it contains data.
      *
-     * @param label user-facing description of the required argument
+     * @param label user-facing description of the required argument.
      * @return supplied main argument
      * @throws ZuccException if the argument was absent or blank
      */
@@ -109,8 +109,8 @@ public abstract class Command {
     /**
      * Validates and returns one required piece of command data.
      *
-     * @param value supplied value, or {@code null} when absent
-     * @param label user-facing name of the required data
+     * @param value supplied value, or {@code null} when absent.
+     * @param label user-facing name of the required data.
      * @return nonblank supplied value
      * @throws ZuccException if the value is absent or blank
      */
@@ -155,9 +155,9 @@ public abstract class Command {
     /**
      * Performs this command's behavior using the application's collaborators.
      *
-     * @param tasks task collection for the current session
-     * @param ui user interface through which responses are shown
-     * @param storage persistent storage for task changes
+     * @param tasks task collection for the current session.
+     * @param ui user interface through which responses are shown.
+     * @param storage persistent storage for task changes.
      * @throws ZuccException if the command cannot be completed
      */
     public abstract void execute(TaskList tasks, Ui ui, Storage storage)

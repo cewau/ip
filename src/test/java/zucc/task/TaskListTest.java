@@ -32,13 +32,13 @@ public class TaskListTest {
 
     @Test
     public void constructor_sourceListChanged_taskListUnaffected() throws ZuccException {
-        List<Task> source = new ArrayList<>();
-        source.add(firstTask);
-        TaskList copiedTasks = new TaskList(source);
+        List<Task> sourceTasks = new ArrayList<>();
+        sourceTasks.add(firstTask);
+        TaskList copiedTasks = new TaskList(sourceTasks);
 
-        source.add(new Todo("Added outside TaskList"));
+        sourceTasks.add(new Todo("Added outside TaskList"));
 
-        assertEquals(1, copiedTasks.size());
+        assertEquals(1, copiedTasks.getTaskCount());
     }
 
     @Test
@@ -47,7 +47,7 @@ public class TaskListTest {
 
         tasks.add(addedTask);
 
-        assertEquals(3, tasks.size());
+        assertEquals(3, tasks.getTaskCount());
         assertSame(addedTask, tasks.delete(2));
     }
 
@@ -56,7 +56,7 @@ public class TaskListTest {
         Task removedTask = tasks.delete(0);
 
         assertSame(firstTask, removedTask);
-        assertEquals(1, tasks.size());
+        assertEquals(1, tasks.getTaskCount());
         assertEquals("1.[T][ ] Write notes", tasks.toString());
     }
 
@@ -65,7 +65,7 @@ public class TaskListTest {
         assertAll(
                 () -> assertThrows(ZuccException.class, () -> tasks.delete(-1)),
                 () -> assertThrows(ZuccException.class, () -> tasks.delete(2)));
-        assertEquals(2, tasks.size());
+        assertEquals(2, tasks.getTaskCount());
     }
 
     @Test

@@ -11,10 +11,10 @@ public final class Ui implements AutoCloseable {
             "____________________________________________________________";
 
     /** The number of spaces before each separator. */
-    private static final int SEPARATOR_INDENT = 4;
+    private static final int OUTPUT_SEPARATOR_INDENT = 4;
 
     /** Messages are indented one space farther than their separators. */
-    private static final int MESSAGE_INDENT = SEPARATOR_INDENT + 1;
+    private static final int OUTPUT_MESSAGE_INDENT = OUTPUT_SEPARATOR_INDENT + 1;
 
     /** Logo and welcome message shown when the application starts. */
     private static final String GREETING = " ______                \n"
@@ -65,12 +65,12 @@ public final class Ui implements AutoCloseable {
      * Prints a response between separators using the required indentation.
      * Multiline responses are indented line by line.
      *
-     * @param message response to print
+     * @param message response to print.
      */
     public void showMessage(String message) {
-        System.out.print(SEPARATOR.indent(SEPARATOR_INDENT));
-        System.out.print(message.indent(MESSAGE_INDENT));
-        System.out.print(SEPARATOR.indent(SEPARATOR_INDENT));
+        System.out.print(SEPARATOR.indent(OUTPUT_SEPARATOR_INDENT));
+        System.out.print(message.indent(OUTPUT_MESSAGE_INDENT));
+        System.out.print(SEPARATOR.indent(OUTPUT_SEPARATOR_INDENT));
     }
 
     /**

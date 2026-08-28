@@ -13,8 +13,8 @@ public abstract class AddTaskCommand extends Command {
     /**
      * Creates an add-task command with its accepted input shape.
      *
-     * @param keyword user-entered keyword represented by this command
-     * @param allowedOptions named options accepted by this command
+     * @param keyword user-entered keyword represented by this command.
+     * @param allowedOptions named options accepted by this command.
      */
     protected AddTaskCommand(String keyword, String... allowedOptions) {
         super(keyword, allowedOptions);
@@ -31,9 +31,9 @@ public abstract class AddTaskCommand extends Command {
     /**
      * Creates the task before performing any state change, then adds and persists it.
      *
-     * @param tasks task collection to update
-     * @param ui user interface through which confirmation is shown
-     * @param storage persistent storage to update
+     * @param tasks task collection to update.
+     * @param ui user interface through which confirmation is shown.
+     * @param storage persistent storage to update.
      * @throws ZuccException if task construction or persistence fails
      */
     @Override
@@ -44,6 +44,6 @@ public abstract class AddTaskCommand extends Command {
         storage.saveTasks(tasks);
         ui.showMessage("Got it. I've added this task:\n  "
                 + task
-                + "\nNow you have " + tasks.size() + " tasks in the list.");
+                + "\nNow you have " + tasks.getTaskCount() + " tasks in the list.");
     }
 }

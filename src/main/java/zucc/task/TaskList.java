@@ -26,7 +26,7 @@ public final class TaskList implements Iterable<Task> {
      * Creates a task list containing the supplied tasks.
      * A defensive copy ensures that this class remains the owner of its collection.
      *
-     * @param initialTasks tasks with which to initialize the list
+     * @param initialTasks tasks with which to initialize the list.
      */
     public TaskList(List<Task> initialTasks) {
         tasks = new ArrayList<>(initialTasks);
@@ -35,7 +35,7 @@ public final class TaskList implements Iterable<Task> {
     /**
      * Adds a task to the end of the list.
      *
-     * @param newTask task to add
+     * @param newTask task to add.
      */
     public void add(Task newTask) {
         tasks.add(newTask);
@@ -44,7 +44,7 @@ public final class TaskList implements Iterable<Task> {
     /**
      * Removes and returns the task at a zero-based index.
      *
-     * @param taskIndex zero-based index of the task to remove
+     * @param taskIndex zero-based index of the task to remove.
      * @return removed task
      * @throws ZuccException if the index is outside the task list
      */
@@ -57,7 +57,7 @@ public final class TaskList implements Iterable<Task> {
     /**
      * Marks the task at a zero-based index as done.
      *
-     * @param taskIndex zero-based index of the task to mark
+     * @param taskIndex zero-based index of the task to mark.
      * @return updated task
      * @throws ZuccException if the index is invalid or the task is already done
      */
@@ -70,7 +70,7 @@ public final class TaskList implements Iterable<Task> {
     /**
      * Marks the task at a zero-based index as incomplete.
      *
-     * @param taskIndex zero-based index of the task to unmark
+     * @param taskIndex zero-based index of the task to unmark.
      * @return updated task
      * @throws ZuccException if the index is invalid or the task is already incomplete
      */
@@ -85,7 +85,7 @@ public final class TaskList implements Iterable<Task> {
      *
      * @return current task count
      */
-    public int size() {
+    public int getTaskCount() {
         return tasks.size();
     }
 
@@ -105,7 +105,7 @@ public final class TaskList implements Iterable<Task> {
      * Formats scheduled tasks occurring on a date using their original task numbers.
      * Preserving those numbers lets users immediately mark or delete a matching task.
      *
-     * @param date date for which tasks should be shown
+     * @param date date for which tasks should be shown.
      * @return matching tasks, one per line
      */
     public String formatTasksOn(LocalDate date) {
@@ -115,7 +115,7 @@ public final class TaskList implements Iterable<Task> {
     /**
      * Returns a task after ensuring its zero-based index is available.
      *
-     * @param taskIndex zero-based task index
+     * @param taskIndex zero-based task index.
      * @return task at the requested index
      * @throws ZuccException if the index is outside the task list
      */
@@ -129,7 +129,7 @@ public final class TaskList implements Iterable<Task> {
     /**
      * Formats tasks matching a condition while preserving their original task numbers.
      *
-     * @param condition condition a task must satisfy to be included
+     * @param condition condition a task must satisfy to be included.
      * @return matching tasks, one per line
      */
     private String formatTasksMatching(Predicate<Task> condition) {

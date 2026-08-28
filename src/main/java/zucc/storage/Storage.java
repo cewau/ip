@@ -21,7 +21,7 @@ public final class Storage {
     /**
      * Creates storage backed by the given file.
      *
-     * @param filePath location at which tasks are stored
+     * @param filePath location at which tasks are stored.
      */
     public Storage(Path filePath) {
         this.filePath = filePath;
@@ -59,7 +59,7 @@ public final class Storage {
     /**
      * Writes the complete current task list to disk, creating its directory if needed.
      *
-     * @param tasks tasks to save in their current order
+     * @param tasks tasks to save in their current order.
      * @throws ZuccException if the data file cannot be written
      */
     public void saveTasks(Iterable<Task> tasks) throws ZuccException {
