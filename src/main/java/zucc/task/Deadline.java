@@ -1,0 +1,82 @@
+package zucc.task;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+
+import zucc.ZuccException;
+
+/**
+ * Represents a task that must be completed by a specific date and time.
+ */
+public class Deadline extends Task {
+    /** Short identifier used when displaying and storing deadlines. */
+    static final String TYPE_CODE = "D";
+
+    /** Error used when a deadline is missing any of its required values. */
+    private static final String INVALID_DEADLINE_ERROR =
+            "Zucc needs more data: add a deadline description "
+                    + "followed by /by and a due date.";
+
+    /** Date and time by which the task should be completed. */
+    private final LocalDateTime by;
+
+    /**
+     * Creates an incomplete deadline with the given description and due date.
+     *
+     * @param description description of the task
+     * @param by due date and time in {@code d/M/yyyy HHmm} format
+     * @throws ZuccException if the description is blank or the due date is invalid
+     */
+    public Deadline(String description, String by) throws ZuccException {
+        super(requireNonBlank(description, INVALID_DEADLINE_ERROR));
+        this.by = TaskDateTimeFormat.parse(
+                requireNonBlank(by, INVALID_DEADLINE_ERROR));
+    }
+
+    /**
+     * Reconstructs a deadline from decoded storage fields.
+     *
+     * @param fields decoded type, status, description, and deadline
+     * @throws ZuccException if the fields do not describe a valid deadline
+     */
+    Deadline(String[] fields) throws ZuccException {
+        if (fields == null || fields.length != 4) {
+            throw new ZuccException("Invalid stored deadline.");
+        }
+        super(fields[2], fields[1]);
+        this.by = TaskDateTimeFormat.parse(
+                requireNonBlank(fields[3], INVALID_DEADLINE_ERROR));
+    }
+
+    /**
+     * Reports whether this deadline is due on a given date.
+     *
+     * @param date date to check
+     * @return {@code true} if the deadline is due on the date
+     */
+    @Override
+    public boolean occursOn(LocalDate date) {
+        return by.toLocalDate().equals(date);
+    }
+
+    /**
+     * Supplies the fields needed to store this deadline.
+     *
+     * @return type code followed by the deadline
+     */
+    @Override
+    protected String[] getStorageFields() {
+        return new String[]{TYPE_CODE, TaskDateTimeFormat.formatForStorage(by)};
+    }
+
+    /**
+     * Formats this task with its type marker and deadline.
+     *
+     * @return deadline with a user-friendly date and time
+     */
+    @Override
+    public String toString() {
+        return "[" + TYPE_CODE + "]" + super.toString()
+                + " (by: " + TaskDateTimeFormat.formatForDisplay(by) + ")";
+    }
+}
