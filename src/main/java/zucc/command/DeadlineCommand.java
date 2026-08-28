@@ -16,8 +16,8 @@ public final class DeadlineCommand extends AddTaskCommand {
     /**
      * Validates required input and constructs the deadline task.
      *
-     * @return constructed deadline task
-     * @throws ZuccException if the description or deadline is missing or malformed
+     * @return constructed deadline task.
+     * @throws ZuccException if the description or deadline is missing or malformed.
      */
     @Override
     protected Task createTask() throws ZuccException {

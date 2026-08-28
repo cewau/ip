@@ -25,7 +25,7 @@ public class Deadline extends Task {
      *
      * @param description description of the task.
      * @param by due date and time in {@code d/M/yyyy HHmm} format.
-     * @throws ZuccException if the description is blank or the due date is invalid
+     * @throws ZuccException if the description is blank or the due date is invalid.
      */
     public Deadline(String description, String by) throws ZuccException {
         super(requireNonBlank(description, INVALID_DEADLINE_ERROR));
@@ -37,7 +37,7 @@ public class Deadline extends Task {
      * Reconstructs a deadline from decoded storage fields.
      *
      * @param fields decoded type, status, description, and deadline.
-     * @throws ZuccException if the fields do not describe a valid deadline
+     * @throws ZuccException if the fields do not describe a valid deadline.
      */
     Deadline(String[] fields) throws ZuccException {
         if (fields == null || fields.length != 4) {
@@ -52,7 +52,7 @@ public class Deadline extends Task {
      * Reports whether this deadline is due on a given date.
      *
      * @param date date to check.
-     * @return {@code true} if the deadline is due on the date
+     * @return {@code true} if the deadline is due on the date.
      */
     @Override
     public boolean occursOn(LocalDate date) {
@@ -62,7 +62,7 @@ public class Deadline extends Task {
     /**
      * Supplies the fields needed to store this deadline.
      *
-     * @return type code followed by the deadline
+     * @return type code followed by the deadline.
      */
     @Override
     protected String[] getStorageFields() {
@@ -72,7 +72,7 @@ public class Deadline extends Task {
     /**
      * Formats this task with its type marker and deadline.
      *
-     * @return deadline with a user-friendly date and time
+     * @return deadline with a user-friendly date and time.
      */
     @Override
     public String toString() {

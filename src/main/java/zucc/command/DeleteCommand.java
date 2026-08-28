@@ -21,7 +21,7 @@ public final class DeleteCommand extends Command {
      * @param tasks task collection to update.
      * @param ui user interface through which confirmation is shown.
      * @param storage persistent storage to update.
-     * @throws ZuccException if the task number is invalid or persistence fails
+     * @throws ZuccException if the task number is invalid or persistence fails.
      */
     @Override
     public void execute(TaskList tasks, Ui ui, Storage storage) throws ZuccException {

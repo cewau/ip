@@ -24,7 +24,7 @@ public class Zucc {
      * Creates a chatbot whose state is backed by the given data file.
      *
      * @param taskFilePath file from which tasks are loaded and to which they are saved.
-     * @throws ZuccException if existing task data cannot be loaded
+     * @throws ZuccException if existing task data cannot be loaded.
      */
     public Zucc(Path taskFilePath) throws ZuccException {
         storage = new Storage(taskFilePath);

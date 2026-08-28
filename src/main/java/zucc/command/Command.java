@@ -48,9 +48,9 @@ public abstract class Command {
      * while Parser is still populating it.
      *
      * @param input complete line entered by the user.
-     * @return completely parsed command
+     * @return completely parsed command.
      * @throws ZuccException if the keyword is unknown or an option is unsupported
-     *         or duplicated
+     *         or duplicated.
      */
     public static Command parse(String input) throws ZuccException {
         return Parser.parse(input);
@@ -70,7 +70,7 @@ public abstract class Command {
      *
      * @param name option separator, including its leading slash.
      * @param value raw option value.
-     * @throws ZuccException if the option is duplicated or unsupported
+     * @throws ZuccException if the option is duplicated or unsupported.
      */
     final void addOption(String name, String value) throws ZuccException {
         if (options.containsKey(name)) {
@@ -88,8 +88,8 @@ public abstract class Command {
      * Returns a required option value after ensuring it contains data.
      *
      * @param optionName required option separator.
-     * @return supplied option value
-     * @throws ZuccException if the option was absent or blank
+     * @return supplied option value.
+     * @throws ZuccException if the option was absent or blank.
      */
     protected final String require(String optionName) throws ZuccException {
         return requireValue(options.get(optionName), optionName);
@@ -99,8 +99,8 @@ public abstract class Command {
      * Returns the main argument after ensuring it contains data.
      *
      * @param label user-facing description of the required argument.
-     * @return supplied main argument
-     * @throws ZuccException if the argument was absent or blank
+     * @return supplied main argument.
+     * @throws ZuccException if the argument was absent or blank.
      */
     protected final String requireArgument(String label) throws ZuccException {
         return requireValue(argument, label);
@@ -111,8 +111,8 @@ public abstract class Command {
      *
      * @param value supplied value, or {@code null} when absent.
      * @param label user-facing name of the required data.
-     * @return nonblank supplied value
-     * @throws ZuccException if the value is absent or blank
+     * @return nonblank supplied value.
+     * @throws ZuccException if the value is absent or blank.
      */
     private String requireValue(String value, String label) throws ZuccException {
         if (value == null || value.isBlank()) {
@@ -126,7 +126,7 @@ public abstract class Command {
      * Ensures that a command that takes no positional argument did not receive one.
      * Unsupported options are rejected separately while Parser populates the command.
      *
-     * @throws ZuccException if the user supplied a positional argument
+     * @throws ZuccException if the user supplied a positional argument.
      */
     protected final void requireNoArgument() throws ZuccException {
         if (!argument.isEmpty()) {
@@ -139,8 +139,8 @@ public abstract class Command {
      * Converts this command's one-based task number to a zero-based list index.
      * Bounds validation remains in {@link TaskList}, which knows the current size.
      *
-     * @return corresponding zero-based list index
-     * @throws ZuccException if the argument is absent or is not an integer
+     * @return corresponding zero-based list index.
+     * @throws ZuccException if the argument is absent or is not an integer.
      */
     protected final int parseTaskIndex() throws ZuccException {
         String taskNumber = requireArgument("a task number");
@@ -158,7 +158,7 @@ public abstract class Command {
      * @param tasks task collection for the current session.
      * @param ui user interface through which responses are shown.
      * @param storage persistent storage for task changes.
-     * @throws ZuccException if the command cannot be completed
+     * @throws ZuccException if the command cannot be completed.
      */
     public abstract void execute(TaskList tasks, Ui ui, Storage storage)
             throws ZuccException;
@@ -166,7 +166,7 @@ public abstract class Command {
     /**
      * Reports whether the application should stop after executing this command.
      *
-     * @return {@code true} only for a command that ends the session
+     * @return {@code true} only for a command that ends the session.
      */
     public boolean isExit() {
         return false;

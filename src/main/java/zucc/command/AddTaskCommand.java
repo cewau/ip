@@ -23,8 +23,8 @@ public abstract class AddTaskCommand extends Command {
     /**
      * Validates the raw command values and creates the task to add.
      *
-     * @return fully constructed task
-     * @throws ZuccException if required task data is missing or malformed
+     * @return fully constructed task.
+     * @throws ZuccException if required task data is missing or malformed.
      */
     protected abstract Task createTask() throws ZuccException;
 
@@ -34,7 +34,7 @@ public abstract class AddTaskCommand extends Command {
      * @param tasks task collection to update.
      * @param ui user interface through which confirmation is shown.
      * @param storage persistent storage to update.
-     * @throws ZuccException if task construction or persistence fails
+     * @throws ZuccException if task construction or persistence fails.
      */
     @Override
     public final void execute(TaskList tasks, Ui ui, Storage storage)

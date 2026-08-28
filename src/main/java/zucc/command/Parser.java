@@ -27,9 +27,9 @@ final class Parser {
      * repeated spaces inside arguments and option values.
      *
      * @param input complete line entered by the user.
-     * @return parsed command
+     * @return parsed command.
      * @throws ZuccException if the command is unknown or an option is unsupported
-     *         or duplicated
+     *         or duplicated.
      */
     static Command parse(String input) throws ZuccException {
         String normalizedInput = input.strip();
@@ -78,8 +78,8 @@ final class Parser {
      * Creates the concrete command associated with a recognized keyword.
      *
      * @param keyword first word of the input line.
-     * @return empty command ready to receive its raw argument and options
-     * @throws ZuccException if the keyword does not identify a supported command
+     * @return empty command ready to receive its raw argument and options.
+     * @throws ZuccException if the keyword does not identify a supported command.
      */
     private static Command createCommand(String keyword) throws ZuccException {
         return switch (keyword) {

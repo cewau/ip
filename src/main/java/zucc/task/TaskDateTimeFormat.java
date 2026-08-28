@@ -40,8 +40,8 @@ public final class TaskDateTimeFormat {
      * Parses a task date and time strictly, including calendar validation.
      *
      * @param value date and time in {@code d/M/yyyy HHmm} format.
-     * @return parsed date and time
-     * @throws ZuccException if the value is blank, malformed, or impossible
+     * @return parsed date and time.
+     * @throws ZuccException if the value is blank, malformed, or impossible.
      */
     static LocalDateTime parse(String value) throws ZuccException {
         try {
@@ -58,8 +58,8 @@ public final class TaskDateTimeFormat {
      * Parses a calendar date used to find scheduled tasks.
      *
      * @param value date in {@code d/M/yyyy} format.
-     * @return parsed date
-     * @throws ZuccException if the value is blank, malformed, or impossible
+     * @return parsed date.
+     * @throws ZuccException if the value is blank, malformed, or impossible.
      */
     public static LocalDate parseDate(String value) throws ZuccException {
         try {
@@ -76,7 +76,7 @@ public final class TaskDateTimeFormat {
      * Formats a date and time for display to the user.
      *
      * @param value date and time to format.
-     * @return value in a user-friendly format
+     * @return value in a user-friendly format.
      */
     static String formatForDisplay(LocalDateTime value) {
         return value.format(DATE_TIME_DISPLAY_FORMAT);
@@ -86,7 +86,7 @@ public final class TaskDateTimeFormat {
      * Formats a calendar date for display to the user.
      *
      * @param value date to format.
-     * @return value in a user-friendly format
+     * @return value in a user-friendly format.
      */
     public static String formatDateForDisplay(LocalDate value) {
         return value.format(DATE_DISPLAY_FORMAT);
@@ -96,7 +96,7 @@ public final class TaskDateTimeFormat {
      * Formats a date and time in the same stable form accepted by the parser.
      *
      * @param value date and time to store.
-     * @return value in persistent form
+     * @return value in persistent form.
      */
     static String formatForStorage(LocalDateTime value) {
         return value.format(DATE_TIME_INPUT_FORMAT);

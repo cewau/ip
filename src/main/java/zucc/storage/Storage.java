@@ -30,8 +30,8 @@ public final class Storage {
     /**
      * Loads all tasks from disk, or returns an empty list when no data file exists yet.
      *
-     * @return tasks in the same order in which they were saved
-     * @throws ZuccException if the file cannot be read or contains invalid task data
+     * @return tasks in the same order in which they were saved.
+     * @throws ZuccException if the file cannot be read or contains invalid task data.
      */
     public List<Task> loadTasks() throws ZuccException {
         if (Files.notExists(filePath)) {
@@ -60,7 +60,7 @@ public final class Storage {
      * Writes the complete current task list to disk, creating its directory if needed.
      *
      * @param tasks tasks to save in their current order.
-     * @throws ZuccException if the data file cannot be written
+     * @throws ZuccException if the data file cannot be written.
      */
     public void saveTasks(Iterable<Task> tasks) throws ZuccException {
         List<String> lines = new ArrayList<>();

@@ -27,7 +27,7 @@ public class EventTest {
     /**
      * Creates a valid multi-day event used by the date-matching and formatting tests.
      *
-     * @throws ZuccException if the shared event fixture cannot be created
+     * @throws ZuccException if the shared event fixture cannot be created.
      */
     @BeforeEach
     public void setUp() throws ZuccException {
@@ -106,7 +106,7 @@ public class EventTest {
     /**
      * Verifies that an event may start and end at the same instant.
      *
-     * @throws ZuccException if the valid zero-duration event cannot be created
+     * @throws ZuccException if the valid zero-duration event cannot be created.
      */
     @Test
     public void constructor_sameStartAndEnd_eventCreated() throws ZuccException {
@@ -119,7 +119,7 @@ public class EventTest {
     /**
      * Verifies that valid decoded storage fields reconstruct the complete event state.
      *
-     * @throws ZuccException if the valid stored event cannot be reconstructed
+     * @throws ZuccException if the valid stored event cannot be reconstructed.
      */
     @Test
     public void storageConstructor_validFields_eventRestored() throws ZuccException {
@@ -212,7 +212,7 @@ public class EventTest {
     /**
      * Verifies that a same-day event occurs on its scheduled date.
      *
-     * @throws ZuccException if the valid same-day event cannot be created
+     * @throws ZuccException if the valid same-day event cannot be created.
      */
     @Test
     public void occursOn_sameDayEventDate_returnsTrue() throws ZuccException {
@@ -227,7 +227,7 @@ public class EventTest {
     /**
      * Verifies that an event spanning New Year occurs on dates in both calendar years.
      *
-     * @throws ZuccException if the valid cross-year event cannot be created
+     * @throws ZuccException if the valid cross-year event cannot be created.
      */
     @Test
     public void occursOn_eventSpanningYearBoundary_bothDatesReturnTrue()

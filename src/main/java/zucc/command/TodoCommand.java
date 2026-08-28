@@ -16,8 +16,8 @@ public final class TodoCommand extends AddTaskCommand {
     /**
      * Validates the required description and constructs a to-do task.
      *
-     * @return constructed to-do task
-     * @throws ZuccException if the description is blank
+     * @return constructed to-do task.
+     * @throws ZuccException if the description is blank.
      */
     @Override
     protected Task createTask() throws ZuccException {

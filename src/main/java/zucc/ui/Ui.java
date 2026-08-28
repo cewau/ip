@@ -39,7 +39,7 @@ public final class Ui implements AutoCloseable {
     /**
      * Reports whether another command is available from the user.
      *
-     * @return {@code true} if another input line can be read
+     * @return {@code true} if another input line can be read.
      */
     public boolean hasNextCommand() {
         return scanner.hasNextLine();
@@ -48,7 +48,7 @@ public final class Ui implements AutoCloseable {
     /**
      * Reads the next command line entered by the user.
      *
-     * @return raw command text
+     * @return raw command text.
      */
     public String readCommand() {
         return scanner.nextLine();

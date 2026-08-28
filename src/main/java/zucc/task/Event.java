@@ -33,7 +33,7 @@ public class Event extends Task {
      * @param description description of the event.
      * @param from start date and time in {@code d/M/yyyy HHmm} format.
      * @param to end date and time in {@code d/M/yyyy HHmm} format.
-     * @throws ZuccException if a required value or date range is invalid
+     * @throws ZuccException if a required value or date range is invalid.
      */
     public Event(String description, String from, String to) throws ZuccException {
         super(requireNonBlank(description, INVALID_EVENT_ERROR));
@@ -49,7 +49,7 @@ public class Event extends Task {
      * The field-count check runs before the superclass constructor so indexing is safe.
      *
      * @param fields decoded type, status, description, start, and end.
-     * @throws ZuccException if the fields do not describe a valid event
+     * @throws ZuccException if the fields do not describe a valid event.
      */
     Event(String[] fields) throws ZuccException {
         if (fields == null || fields.length != 5) {
@@ -66,7 +66,7 @@ public class Event extends Task {
     /**
      * Ensures that this event's end does not precede its start.
      *
-     * @throws ZuccException if the event has a negative duration
+     * @throws ZuccException if the event has a negative duration.
      */
     private void requireValidRange() throws ZuccException {
         if (endDateTime.isBefore(startDateTime)) {
@@ -79,7 +79,7 @@ public class Event extends Task {
      * Both the start and end dates are included.
      *
      * @param date date to check.
-     * @return {@code true} if the event occurs on the date
+     * @return {@code true} if the event occurs on the date.
      */
     @Override
     public boolean occursOn(LocalDate date) {
@@ -90,7 +90,7 @@ public class Event extends Task {
     /**
      * Supplies the plain subtype fields needed to store this event.
      *
-     * @return type code followed by the start and end times
+     * @return type code followed by the start and end times.
      */
     @Override
     protected String[] getStorageFields() {
@@ -104,7 +104,7 @@ public class Event extends Task {
     /**
      * Formats this task with its type marker and time range.
      *
-     * @return the task in {@code [E][status] description (from: start to: end)} format
+     * @return the task in {@code [E][status] description (from: start to: end)} format.
      */
     @Override
     public String toString() {

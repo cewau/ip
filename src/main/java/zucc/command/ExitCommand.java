@@ -30,7 +30,7 @@ public final class ExitCommand extends Command {
     /**
      * Identifies this command as the command that ends the session.
      *
-     * @return {@code true}
+     * @return {@code true}.
      */
     @Override
     public boolean isExit() {

@@ -21,7 +21,7 @@ public final class UnmarkCommand extends Command {
      * @param tasks task collection to update.
      * @param ui user interface through which confirmation is shown.
      * @param storage persistent storage to update.
-     * @throws ZuccException if the task cannot be unmarked or persisted
+     * @throws ZuccException if the task cannot be unmarked or persisted.
      */
     @Override
     public void execute(TaskList tasks, Ui ui, Storage storage) throws ZuccException {
