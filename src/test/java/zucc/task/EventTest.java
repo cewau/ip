@@ -24,11 +24,19 @@ public class EventTest {
 
     private Event multiDayEvent;
 
+    /**
+     * Creates a valid multi-day event used by the date-matching and formatting tests.
+     *
+     * @throws ZuccException if the shared event fixture cannot be created
+     */
     @BeforeEach
     public void setUp() throws ZuccException {
         multiDayEvent = new Event(EVENT_DESCRIPTION, EVENT_START, EVENT_END);
     }
 
+    /**
+     * Verifies that an event rejects null, empty, and whitespace-only descriptions.
+     */
     @Test
     public void constructor_nullOrBlankDescription_exceptionThrown() {
         assertAll(
@@ -40,6 +48,9 @@ public class EventTest {
                         () -> new Event("   ", EVENT_START, EVENT_END)));
     }
 
+    /**
+     * Verifies that an event rejects null, empty, and whitespace-only start values.
+     */
     @Test
     public void constructor_nullOrBlankStart_exceptionThrown() {
         assertAll(
@@ -51,6 +62,9 @@ public class EventTest {
                         () -> new Event(EVENT_DESCRIPTION, "   ", EVENT_END)));
     }
 
+    /**
+     * Verifies that an event rejects null, empty, and whitespace-only end values.
+     */
     @Test
     public void constructor_nullOrBlankEnd_exceptionThrown() {
         assertAll(
@@ -62,24 +76,38 @@ public class EventTest {
                         () -> new Event(EVENT_DESCRIPTION, EVENT_START, "   ")));
     }
 
+    /**
+     * Verifies that an event rejects a malformed start date and time.
+     */
     @Test
     public void constructor_malformedStart_exceptionThrown() {
         assertThrows(ZuccException.class,
                 () -> new Event(EVENT_DESCRIPTION, "not a date", EVENT_END));
     }
 
+    /**
+     * Verifies that an event rejects an impossible end date.
+     */
     @Test
     public void constructor_impossibleEndDate_exceptionThrown() {
         assertThrows(ZuccException.class,
                 () -> new Event(EVENT_DESCRIPTION, EVENT_START, "31/2/2027 1200"));
     }
 
+    /**
+     * Verifies that an event cannot end before it starts.
+     */
     @Test
     public void constructor_endBeforeStart_exceptionThrown() {
         assertThrows(ZuccException.class,
                 () -> new Event(EVENT_DESCRIPTION, "12/6/2026 0100", "10/6/2026 2300"));
     }
 
+    /**
+     * Verifies that an event may start and end at the same instant.
+     *
+     * @throws ZuccException if the valid zero-duration event cannot be created
+     */
     @Test
     public void constructor_sameStartAndEnd_eventCreated() throws ZuccException {
         Event zeroDurationEvent = new Event(
@@ -88,6 +116,11 @@ public class EventTest {
         assertTrue(zeroDurationEvent.occursOn(LocalDate.of(2026, 6, 15)));
     }
 
+    /**
+     * Verifies that valid decoded storage fields reconstruct the complete event state.
+     *
+     * @throws ZuccException if the valid stored event cannot be reconstructed
+     */
     @Test
     public void storageConstructor_validFields_eventRestored() throws ZuccException {
         Event restoredEvent = new Event(new String[] {
@@ -100,6 +133,9 @@ public class EventTest {
                 restoredEvent.toString());
     }
 
+    /**
+     * Verifies that stored event data must contain exactly the required fields.
+     */
     @Test
     public void storageConstructor_nullOrIncorrectFieldCount_exceptionThrown() {
         assertAll(
@@ -113,12 +149,18 @@ public class EventTest {
                         })));
     }
 
+    /**
+     * Verifies that stored event data rejects an invalid completion status.
+     */
     @Test
     public void storageConstructor_invalidCompletionStatus_exceptionThrown() {
         assertThrows(ZuccException.class,
                 () -> new Event(new String[] {"E", "done", EVENT_DESCRIPTION, EVENT_START, EVENT_END}));
     }
 
+    /**
+     * Verifies that stored event data cannot reconstruct a reversed time range.
+     */
     @Test
     public void storageConstructor_endBeforeStart_exceptionThrown() {
         assertThrows(ZuccException.class,
@@ -127,31 +169,51 @@ public class EventTest {
                 }));
     }
 
+    /**
+     * Verifies that an event does not occur on a date before its start date.
+     */
     @Test
     public void occursOn_dateBeforeEvent_returnsFalse() {
         assertFalse(multiDayEvent.occursOn(LocalDate.of(2026, 6, 9)));
     }
 
+    /**
+     * Verifies that an event occurs on its start date.
+     */
     @Test
     public void occursOn_eventStartDate_returnsTrue() {
         assertTrue(multiDayEvent.occursOn(LocalDate.of(2026, 6, 10)));
     }
 
+    /**
+     * Verifies that a multi-day event occurs on a date inside its range.
+     */
     @Test
     public void occursOn_dateBetweenStartAndEnd_returnsTrue() {
         assertTrue(multiDayEvent.occursOn(LocalDate.of(2026, 6, 11)));
     }
 
+    /**
+     * Verifies that an event occurs on its end date.
+     */
     @Test
     public void occursOn_eventEndDate_returnsTrue() {
         assertTrue(multiDayEvent.occursOn(LocalDate.of(2026, 6, 12)));
     }
 
+    /**
+     * Verifies that an event does not occur on a date after its end date.
+     */
     @Test
     public void occursOn_dateAfterEvent_returnsFalse() {
         assertFalse(multiDayEvent.occursOn(LocalDate.of(2026, 6, 13)));
     }
 
+    /**
+     * Verifies that a same-day event occurs on its scheduled date.
+     *
+     * @throws ZuccException if the valid same-day event cannot be created
+     */
     @Test
     public void occursOn_sameDayEventDate_returnsTrue() throws ZuccException {
         Event sameDayEvent = new Event(
@@ -162,6 +224,11 @@ public class EventTest {
         assertTrue(sameDayEvent.occursOn(LocalDate.of(2026, 6, 15)));
     }
 
+    /**
+     * Verifies that an event spanning New Year occurs on dates in both calendar years.
+     *
+     * @throws ZuccException if the valid cross-year event cannot be created
+     */
     @Test
     public void occursOn_eventSpanningYearBoundary_bothDatesReturnTrue()
             throws ZuccException {
@@ -175,6 +242,9 @@ public class EventTest {
                 () -> assertTrue(newYearEvent.occursOn(LocalDate.of(2027, 1, 1))));
     }
 
+    /**
+     * Verifies that an event supplies its type, start, and end values for storage.
+     */
     @Test
     public void getStorageFields_event_returnsTypeAndTimeRange() {
         assertArrayEquals(
@@ -182,6 +252,9 @@ public class EventTest {
                 multiDayEvent.getStorageFields());
     }
 
+    /**
+     * Verifies the display format of an incomplete event and its time range.
+     */
     @Test
     public void toString_incompleteEvent_returnsFormattedEvent() {
         assertEquals(
