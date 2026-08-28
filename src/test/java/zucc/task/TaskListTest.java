@@ -123,6 +123,26 @@ public class TaskListTest {
     }
 
     @Test
+    public void formatTasksContaining_matchingKeyword_onlyDescriptionsWithOriginalNumbersReturned()
+            throws ZuccException {
+        TaskList searchableTasks = new TaskList(List.of(
+                new Todo("Read book"),
+                new Deadline("Submit report", "10/9/2026 1200"),
+                new Deadline("Return book", "12/9/2026 1200")));
+        searchableTasks.mark(2);
+
+        assertEquals(
+                "1.[T][ ] Read book\n"
+                        + "3.[D][X] Return book (by: Sep 12 2026, 12:00PM)",
+                searchableTasks.formatTasksContaining("book"));
+    }
+
+    @Test
+    public void formatTasksContaining_noMatchingKeyword_emptyStringReturned() {
+        assertEquals("", tasks.formatTasksContaining("book"));
+    }
+
+    @Test
     public void toString_multipleTasks_oneBasedNumberedListReturned() {
         assertEquals(
                 "1.[T][ ] Read chapter\n2.[T][ ] Write notes",

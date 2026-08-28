@@ -14,7 +14,7 @@ final class Parser {
     /** Message used when the first word does not identify a supported command. */
     private static final String UNKNOWN_COMMAND_ERROR =
             "Zucc's algorithm doesn't recognize that command. "
-                    + "Try todo, deadline, event, list, on, mark, unmark, delete, or bye.";
+                    + "Try todo, deadline, event, list, find, on, mark, unmark, delete, or bye.";
 
     /** Prevents creation of a utility class that contains only parsing operations. */
     private Parser() {
@@ -87,6 +87,7 @@ final class Parser {
         case "deadline" -> new DeadlineCommand();
         case "event" -> new EventCommand();
         case "list" -> new ListCommand();
+        case "find" -> new FindCommand();
         case "on" -> new OnCommand();
         case "mark" -> new MarkCommand();
         case "unmark" -> new UnmarkCommand();
