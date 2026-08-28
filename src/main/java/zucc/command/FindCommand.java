@@ -17,10 +17,10 @@ public final class FindCommand extends Command {
     /**
      * Finds and displays tasks containing this command's keyword.
      *
-     * @param tasks task collection to search
-     * @param ui user interface through which the results are shown
-     * @param storage persistent storage; unchanged by this command
-     * @throws ZuccException if the search keyword is missing
+     * @param tasks task collection to search.
+     * @param ui user interface through which the results are shown.
+     * @param storage persistent storage; unchanged by this command.
+     * @throws ZuccException if the search keyword is missing.
      */
     @Override
     public void execute(TaskList tasks, Ui ui, Storage storage) throws ZuccException {

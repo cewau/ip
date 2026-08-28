@@ -169,7 +169,9 @@ public class TaskListTest {
     }
 
     /**
-     * Verifies that multiple tasks are formatted as a one-based numbered list.
+     * Verifies that keyword filtering returns only matching tasks with their original numbers.
+     *
+     * @throws ZuccException if the valid task fixtures cannot be created or marked.
      */
     @Test
     public void formatTasksContaining_matchingKeyword_onlyDescriptionsWithOriginalNumbersReturned()
@@ -186,11 +188,17 @@ public class TaskListTest {
                 searchableTasks.formatTasksContaining("book"));
     }
 
+    /**
+     * Verifies that keyword filtering returns an empty string when no task matches.
+     */
     @Test
     public void formatTasksContaining_noMatchingKeyword_emptyStringReturned() {
         assertEquals("", tasks.formatTasksContaining("book"));
     }
 
+    /**
+     * Verifies that multiple tasks are formatted as a one-based numbered list.
+     */
     @Test
     public void toString_multipleTasks_oneBasedNumberedListReturned() {
         assertEquals(

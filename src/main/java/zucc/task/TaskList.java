@@ -116,8 +116,8 @@ public final class TaskList implements Iterable<Task> {
      * Formats tasks whose descriptions contain a keyword, preserving their
      * original task numbers.
      *
-     * @param keyword text to search for in task descriptions
-     * @return matching tasks, one per line
+     * @param keyword text to search for in task descriptions.
+     * @return matching tasks, one per line.
      */
     public String formatTasksContaining(String keyword) {
         return formatTasksMatching(task -> task.descriptionContains(keyword));
