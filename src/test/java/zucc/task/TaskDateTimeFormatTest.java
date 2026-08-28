@@ -15,6 +15,11 @@ import zucc.ZuccException;
  * Tests strict parsing and stable formatting of task dates and times.
  */
 public class TaskDateTimeFormatTest {
+    /**
+     * Verifies that a valid date and time with single-digit fields is parsed correctly.
+     *
+     * @throws ZuccException if the valid date and time cannot be parsed.
+     */
     @Test
     public void parse_validSingleDigitDateTime_parsedValueReturned() throws ZuccException {
         assertEquals(
@@ -22,6 +27,11 @@ public class TaskDateTimeFormatTest {
                 TaskDateTimeFormat.parse("2/9/2026 0805"));
     }
 
+    /**
+     * Verifies that a valid leap-day date and time is parsed correctly.
+     *
+     * @throws ZuccException if the valid leap-day value cannot be parsed.
+     */
     @Test
     public void parse_validLeapDay_parsedValueReturned() throws ZuccException {
         assertEquals(
@@ -29,6 +39,9 @@ public class TaskDateTimeFormatTest {
                 TaskDateTimeFormat.parse("29/2/2028 2359"));
     }
 
+    /**
+     * Verifies that malformed, impossible, invalid-time, and blank values are rejected.
+     */
     @Test
     public void parse_malformedImpossibleOrInvalidTime_exceptionThrown() {
         assertAll(
@@ -42,11 +55,19 @@ public class TaskDateTimeFormatTest {
                         () -> TaskDateTimeFormat.parse("   ")));
     }
 
+    /**
+     * Verifies that a valid date without a time is parsed correctly.
+     *
+     * @throws ZuccException if the valid date cannot be parsed.
+     */
     @Test
     public void parseDate_validDate_parsedValueReturned() throws ZuccException {
         assertEquals(LocalDate.of(2026, 9, 2), TaskDateTimeFormat.parseDate("2/9/2026"));
     }
 
+    /**
+     * Verifies that malformed, impossible, and blank date-only values are rejected.
+     */
     @Test
     public void parseDate_malformedOrImpossibleDate_exceptionThrown() {
         assertAll(
@@ -58,6 +79,9 @@ public class TaskDateTimeFormatTest {
                         () -> TaskDateTimeFormat.parseDate("")));
     }
 
+    /**
+     * Verifies the user-facing and persistent formats for a known date and time.
+     */
     @Test
     public void formatMethods_dateTime_returnExpectedDisplayAndStorageForms() {
         LocalDateTime dateTime = LocalDateTime.of(2026, 9, 2, 8, 5);

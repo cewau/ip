@@ -12,7 +12,7 @@ public class ZuccException extends Exception {
     /**
      * Creates an input error with a message that can be shown directly to the user.
      *
-     * @param message explanation of how the user can correct the command
+     * @param message explanation of how the user can correct the command.
      */
     public ZuccException(String message) {
         super(message);
@@ -21,8 +21,8 @@ public class ZuccException extends Exception {
     /**
      * Creates an input or storage error caused by another failure.
      *
-     * @param message explanation that can be shown directly to the user
-     * @param cause underlying failure
+     * @param message explanation that can be shown directly to the user.
+     * @param cause underlying failure.
      */
     public ZuccException(String message, Throwable cause) {
         super(message, cause);

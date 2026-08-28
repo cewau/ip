@@ -17,9 +17,9 @@ public final class ExitCommand extends Command {
     /**
      * Shows the farewell message.
      *
-     * @param tasks task collection for the current session
-     * @param ui user interface through which the farewell is shown
-     * @param storage persistent storage; unchanged by this command
+     * @param tasks task collection for the current session.
+     * @param ui user interface through which the farewell is shown.
+     * @param storage persistent storage; unchanged by this command.
      */
     @Override
     public void execute(TaskList tasks, Ui ui, Storage storage) throws ZuccException {
@@ -30,7 +30,7 @@ public final class ExitCommand extends Command {
     /**
      * Identifies this command as the command that ends the session.
      *
-     * @return {@code true}
+     * @return {@code true}.
      */
     @Override
     public boolean isExit() {

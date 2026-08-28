@@ -18,10 +18,10 @@ public final class DeleteCommand extends Command {
     /**
      * Validates the task number before removing and persisting the selected task.
      *
-     * @param tasks task collection to update
-     * @param ui user interface through which confirmation is shown
-     * @param storage persistent storage to update
-     * @throws ZuccException if the task number is invalid or persistence fails
+     * @param tasks task collection to update.
+     * @param ui user interface through which confirmation is shown.
+     * @param storage persistent storage to update.
+     * @throws ZuccException if the task number is invalid or persistence fails.
      */
     @Override
     public void execute(TaskList tasks, Ui ui, Storage storage) throws ZuccException {
@@ -30,6 +30,6 @@ public final class DeleteCommand extends Command {
         storage.saveTasks(tasks);
         ui.showMessage("Noted. I've removed this task:\n  "
                 + removedTask
-                + "\nNow you have " + tasks.size() + " tasks in the list.");
+                + "\nNow you have " + tasks.getTaskCount() + " tasks in the list.");
     }
 }

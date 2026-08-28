@@ -16,8 +16,8 @@ public final class EventCommand extends AddTaskCommand {
     /**
      * Validates required input and constructs the event task.
      *
-     * @return constructed event task
-     * @throws ZuccException if the description, start, or end is missing or malformed
+     * @return constructed event task.
+     * @throws ZuccException if the description, start, or end is missing or malformed.
      */
     @Override
     protected Task createTask() throws ZuccException {

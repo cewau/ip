@@ -16,6 +16,9 @@ import zucc.task.Task;
  * Tests command parsing and the validation shared by concrete commands.
  */
 public class CommandTest {
+    /**
+     * Verifies that every supported command keyword produces its matching command type.
+     */
     @Test
     public void parse_knownKeywords_returnsMatchingCommandTypes() {
         assertAll(
@@ -33,6 +36,9 @@ public class CommandTest {
                 () -> assertInstanceOf(ExitCommand.class, Command.parse("bye")));
     }
 
+    /**
+     * Verifies that unknown and blank command keywords are rejected.
+     */
     @Test
     public void parse_unknownOrBlankCommand_exceptionThrown() {
         assertAll(
@@ -40,6 +46,11 @@ public class CommandTest {
                 () -> assertThrows(ZuccException.class, () -> Command.parse("   ")));
     }
 
+    /**
+     * Verifies that parsing preserves repeated spaces within a to-do description.
+     *
+     * @throws ZuccException if the command or resulting task cannot be created.
+     */
     @Test
     public void parse_todoWithRepeatedSpaces_spacesPreservedInDescription()
             throws ZuccException {
@@ -49,6 +60,11 @@ public class CommandTest {
         assertEquals("[T][ ] read  chapter", command.createTask().toString());
     }
 
+    /**
+     * Verifies that a slash within an argument word remains part of the description.
+     *
+     * @throws ZuccException if the command or resulting task cannot be created.
+     */
     @Test
     public void parse_slashInsideArgumentWord_slashPreservedInDescription()
             throws ZuccException {
@@ -61,6 +77,11 @@ public class CommandTest {
                 command.createTask().toString());
     }
 
+    /**
+     * Verifies that a deadline command and its {@code /by} option create the expected task.
+     *
+     * @throws ZuccException if the valid command or task cannot be created.
+     */
     @Test
     public void parse_deadlineWithOption_taskCreated() throws ZuccException {
         DeadlineCommand command = assertInstanceOf(
@@ -72,6 +93,11 @@ public class CommandTest {
         assertEquals("[D][ ] submit report (by: Sep 02 2026, 6:00PM)", task.toString());
     }
 
+    /**
+     * Verifies that event options create the same task regardless of their input order.
+     *
+     * @throws ZuccException if either valid command or task cannot be created.
+     */
     @Test
     public void parse_eventOptionsInEitherOrder_tasksCreated() throws ZuccException {
         EventCommand usualOrder = assertInstanceOf(
@@ -84,6 +110,9 @@ public class CommandTest {
         assertEquals(usualOrder.createTask().toString(), reversedOrder.createTask().toString());
     }
 
+    /**
+     * Verifies that supplying the same named option twice is rejected.
+     */
     @Test
     public void parse_duplicateOption_exceptionThrown() {
         assertThrows(ZuccException.class,
@@ -91,12 +120,20 @@ public class CommandTest {
                         "deadline submit /by 2/9/2026 1800 /by 3/9/2026 1800"));
     }
 
+    /**
+     * Verifies that a command rejects named options it does not support.
+     */
     @Test
     public void parse_optionUnsupportedByCommand_exceptionThrown() {
         assertThrows(ZuccException.class,
                 () -> Command.parse("todo read /by 2/9/2026 1800"));
     }
 
+    /**
+     * Verifies that task creation rejects commands missing required arguments or options.
+     *
+     * @throws ZuccException if parsing fails before the missing values can be tested.
+     */
     @Test
     public void createTask_requiredArgumentOrOptionMissing_exceptionThrown()
             throws ZuccException {
@@ -114,6 +151,11 @@ public class CommandTest {
                 () -> assertThrows(ZuccException.class, missingEnd::createTask));
     }
 
+    /**
+     * Verifies that a one-based task number is converted to its zero-based list index.
+     *
+     * @throws ZuccException if the valid task number cannot be parsed.
+     */
     @Test
     public void parseTaskIndex_validOneBasedNumber_returnsZeroBasedIndex()
             throws ZuccException {
@@ -122,6 +164,11 @@ public class CommandTest {
         assertEquals(2, command.parseTaskIndex());
     }
 
+    /**
+     * Verifies that absent, nonnumeric, and overflowing task numbers are rejected.
+     *
+     * @throws ZuccException if command creation fails before the task numbers can be tested.
+     */
     @Test
     public void parseTaskIndex_missingMalformedOrTooLargeNumber_exceptionThrown()
             throws ZuccException {
@@ -136,6 +183,11 @@ public class CommandTest {
                 () -> assertThrows(ZuccException.class, tooLargeForInteger::parseTaskIndex));
     }
 
+    /**
+     * Verifies that a command which accepts no argument rejects unexpected text.
+     *
+     * @throws ZuccException if command creation fails before validation can be tested.
+     */
     @Test
     public void requireNoArgument_argumentSupplied_exceptionThrown() throws ZuccException {
         ListCommand command = assertInstanceOf(
@@ -144,6 +196,11 @@ public class CommandTest {
         assertThrows(ZuccException.class, command::requireNoArgument);
     }
 
+    /**
+     * Verifies that only the exit command reports that the application should stop.
+     *
+     * @throws ZuccException if either valid command cannot be parsed.
+     */
     @Test
     public void isExit_exitAndRegularCommands_returnsExpectedValues() throws ZuccException {
         assertTrue(Command.parse("bye").isExit());

@@ -16,11 +16,21 @@ import zucc.ZuccException;
 public class TaskTest {
     private Todo todo;
 
+    /**
+     * Creates an incomplete to-do used by the task state-transition tests.
+     *
+     * @throws ZuccException if the valid task fixture cannot be created.
+     */
     @BeforeEach
     public void setUp() throws ZuccException {
         todo = new Todo("Read testing chapter");
     }
 
+    /**
+     * Verifies that marking an incomplete task changes its status to done.
+     *
+     * @throws ZuccException if the valid state transition cannot be completed.
+     */
     @Test
     public void markAsDone_incompleteTask_statusChangedToDone() throws ZuccException {
         todo.markAsDone();
@@ -28,6 +38,11 @@ public class TaskTest {
         assertEquals("X", todo.getStatusIcon());
     }
 
+    /**
+     * Verifies that marking an already completed task is rejected.
+     *
+     * @throws ZuccException if the fixture task cannot first be marked.
+     */
     @Test
     public void markAsDone_completedTask_exceptionThrown() throws ZuccException {
         todo.markAsDone();
@@ -35,6 +50,11 @@ public class TaskTest {
         assertThrows(ZuccException.class, todo::markAsDone);
     }
 
+    /**
+     * Verifies that unmarking a completed task changes its status to incomplete.
+     *
+     * @throws ZuccException if either valid state transition cannot be completed.
+     */
     @Test
     public void markAsNotDone_completedTask_statusChangedToIncomplete() throws ZuccException {
         todo.markAsDone();
@@ -44,11 +64,19 @@ public class TaskTest {
         assertEquals(" ", todo.getStatusIcon());
     }
 
+    /**
+     * Verifies that unmarking an already incomplete task is rejected.
+     */
     @Test
     public void markAsNotDone_incompleteTask_exceptionThrown() {
         assertThrows(ZuccException.class, todo::markAsNotDone);
     }
 
+    /**
+     * Verifies that storage separators and escape characters are encoded safely.
+     *
+     * @throws ZuccException if the valid task cannot be created or marked.
+     */
     @Test
     public void toStorageString_specialStorageCharacters_charactersEscaped()
             throws ZuccException {
@@ -60,6 +88,11 @@ public class TaskTest {
                 task.toStorageString());
     }
 
+    /**
+     * Verifies that every task subtype retains its type, data, and status after storage.
+     *
+     * @throws ZuccException if a valid fixture cannot be created or reconstructed.
+     */
     @Test
     public void storageRoundTrip_eachTaskType_dataAndStatusPreserved() throws ZuccException {
         Todo todoTask = new Todo("Use literal %7C and | symbols");
@@ -74,12 +107,18 @@ public class TaskTest {
                 () -> assertStorageRoundTrip(eventTask, Event.class));
     }
 
+    /**
+     * Verifies that storage data with an unknown task type is rejected.
+     */
     @Test
     public void fromStorageString_unknownType_exceptionThrown() {
         assertThrows(ZuccException.class,
                 () -> Task.fromStorageString("X | 0 | unsupported"));
     }
 
+    /**
+     * Verifies that incomplete fields and invalid completion states are rejected.
+     */
     @Test
     public void fromStorageString_invalidFieldCountOrStatus_exceptionThrown() {
         assertAll(
@@ -95,9 +134,9 @@ public class TaskTest {
     /**
      * Verifies that saving and loading one task preserves its concrete type and data.
      *
-     * @param original task to save and load
-     * @param expectedType concrete type expected after loading
-     * @throws ZuccException if the stored representation cannot be loaded
+     * @param original task to save and load.
+     * @param expectedType concrete type expected after loading.
+     * @throws ZuccException if the stored representation cannot be loaded.
      */
     private void assertStorageRoundTrip(Task original, Class<? extends Task> expectedType)
             throws ZuccException {

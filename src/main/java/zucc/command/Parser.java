@@ -26,10 +26,10 @@ final class Parser {
      * value continues until the next option separator. Empty tokens preserve
      * repeated spaces inside arguments and option values.
      *
-     * @param input complete line entered by the user
-     * @return parsed command
+     * @param input complete line entered by the user.
+     * @return parsed command.
      * @throws ZuccException if the command is unknown or an option is unsupported
-     *         or duplicated
+     *         or duplicated.
      */
     static Command parse(String input) throws ZuccException {
         String normalizedInput = input.strip();
@@ -41,13 +41,13 @@ final class Parser {
         boolean hasValueTokens = false;
 
         while (true) {
-            boolean inputFinished = !words.hasNext();
-            String word = inputFinished ? "" : words.next();
-            boolean isOption = !inputFinished
+            boolean isInputFinished = !words.hasNext();
+            String word = isInputFinished ? "" : words.next();
+            boolean isOption = !isInputFinished
                     && word.startsWith("/")
                     && word.length() > 1;
 
-            if (inputFinished || isOption) {
+            if (isInputFinished || isOption) {
                 String completedValue = currentValue.toString().strip();
                 if (currentOption == null) {
                     command.setArgument(completedValue);
@@ -55,7 +55,7 @@ final class Parser {
                     command.addOption(currentOption, completedValue);
                 }
 
-                if (inputFinished) {
+                if (isInputFinished) {
                     break;
                 }
                 currentOption = word;
@@ -77,23 +77,23 @@ final class Parser {
     /**
      * Creates the concrete command associated with a recognized keyword.
      *
-     * @param keyword first word of the input line
-     * @return empty command ready to receive its raw argument and options
-     * @throws ZuccException if the keyword does not identify a supported command
+     * @param keyword first word of the input line.
+     * @return empty command ready to receive its raw argument and options.
+     * @throws ZuccException if the keyword does not identify a supported command.
      */
     private static Command createCommand(String keyword) throws ZuccException {
         return switch (keyword) {
-        case "todo" -> new TodoCommand();
-        case "deadline" -> new DeadlineCommand();
-        case "event" -> new EventCommand();
-        case "list" -> new ListCommand();
-        case "find" -> new FindCommand();
-        case "on" -> new OnCommand();
-        case "mark" -> new MarkCommand();
-        case "unmark" -> new UnmarkCommand();
-        case "delete" -> new DeleteCommand();
-        case "bye" -> new ExitCommand();
-        default -> throw new ZuccException(UNKNOWN_COMMAND_ERROR);
+            case "todo" -> new TodoCommand();
+            case "deadline" -> new DeadlineCommand();
+            case "event" -> new EventCommand();
+            case "list" -> new ListCommand();
+            case "find" -> new FindCommand();
+            case "on" -> new OnCommand();
+            case "mark" -> new MarkCommand();
+            case "unmark" -> new UnmarkCommand();
+            case "delete" -> new DeleteCommand();
+            case "bye" -> new ExitCommand();
+            default -> throw new ZuccException(UNKNOWN_COMMAND_ERROR);
         };
     }
 }

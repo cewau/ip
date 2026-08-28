@@ -23,6 +23,11 @@ public class TaskListTest {
     private Todo secondTask;
     private TaskList tasks;
 
+    /**
+     * Creates a two-item task list used by the collection-operation tests.
+     *
+     * @throws ZuccException if either valid task fixture cannot be created.
+     */
     @BeforeEach
     public void setUp() throws ZuccException {
         firstTask = new Todo("Read chapter");
@@ -30,44 +35,67 @@ public class TaskListTest {
         tasks = new TaskList(List.of(firstTask, secondTask));
     }
 
+    /**
+     * Verifies that a task list is unaffected by later changes to its source list.
+     *
+     * @throws ZuccException if a valid test task cannot be created.
+     */
     @Test
     public void constructor_sourceListChanged_taskListUnaffected() throws ZuccException {
-        List<Task> source = new ArrayList<>();
-        source.add(firstTask);
-        TaskList copiedTasks = new TaskList(source);
+        List<Task> sourceTasks = new ArrayList<>();
+        sourceTasks.add(firstTask);
+        TaskList copiedTasks = new TaskList(sourceTasks);
 
-        source.add(new Todo("Added outside TaskList"));
+        sourceTasks.add(new Todo("Added outside TaskList"));
 
-        assertEquals(1, copiedTasks.size());
+        assertEquals(1, copiedTasks.getTaskCount());
     }
 
+    /**
+     * Verifies that adding a task appends the same task instance to the list.
+     *
+     * @throws ZuccException if the valid task cannot be created or retrieved.
+     */
     @Test
     public void add_newTask_taskAppended() throws ZuccException {
         Todo addedTask = new Todo("Review notes");
 
         tasks.add(addedTask);
 
-        assertEquals(3, tasks.size());
+        assertEquals(3, tasks.getTaskCount());
         assertSame(addedTask, tasks.delete(2));
     }
 
+    /**
+     * Verifies that deletion removes and returns the task at a valid index.
+     *
+     * @throws ZuccException if the valid task index cannot be deleted.
+     */
     @Test
     public void delete_validIndex_taskRemovedAndReturned() throws ZuccException {
         Task removedTask = tasks.delete(0);
 
         assertSame(firstTask, removedTask);
-        assertEquals(1, tasks.size());
+        assertEquals(1, tasks.getTaskCount());
         assertEquals("1.[T][ ] Write notes", tasks.toString());
     }
 
+    /**
+     * Verifies that invalid deletion indexes are rejected without changing the list.
+     */
     @Test
     public void delete_indexOutsideList_exceptionThrownAndListUnchanged() {
         assertAll(
                 () -> assertThrows(ZuccException.class, () -> tasks.delete(-1)),
                 () -> assertThrows(ZuccException.class, () -> tasks.delete(2)));
-        assertEquals(2, tasks.size());
+        assertEquals(2, tasks.getTaskCount());
     }
 
+    /**
+     * Verifies that marking and unmarking update and return the selected task.
+     *
+     * @throws ZuccException if either valid state transition cannot be completed.
+     */
     @Test
     public void markAndUnmark_validIndex_taskStateChangedAndReturned() throws ZuccException {
         Task markedTask = tasks.mark(1);
@@ -81,6 +109,11 @@ public class TaskListTest {
         assertEquals(" ", secondTask.getStatusIcon());
     }
 
+    /**
+     * Verifies that marking or unmarking a task already in that state is rejected.
+     *
+     * @throws ZuccException if the fixture task cannot first be marked.
+     */
     @Test
     public void markOrUnmark_invalidState_exceptionThrown() throws ZuccException {
         tasks.mark(0);
@@ -90,6 +123,9 @@ public class TaskListTest {
                 () -> assertThrows(ZuccException.class, () -> tasks.unmark(1)));
     }
 
+    /**
+     * Verifies that callers cannot remove tasks through the list's iterator.
+     */
     @Test
     public void iterator_removeAttempt_unsupportedOperationThrown() {
         Iterator<Task> iterator = tasks.iterator();
@@ -98,6 +134,11 @@ public class TaskListTest {
         assertThrows(UnsupportedOperationException.class, iterator::remove);
     }
 
+    /**
+     * Verifies that date filtering includes only matching scheduled tasks with original numbers.
+     *
+     * @throws ZuccException if the valid scheduled task fixtures cannot be created.
+     */
     @Test
     public void formatTasksOn_matchingDate_onlyScheduledTasksWithOriginalNumbersReturned()
             throws ZuccException {
@@ -114,6 +155,11 @@ public class TaskListTest {
                 scheduledTasks.formatTasksOn(LocalDate.of(2026, 9, 10)));
     }
 
+    /**
+     * Verifies that date filtering returns an empty string when no task matches.
+     *
+     * @throws ZuccException if the valid scheduled task fixture cannot be created.
+     */
     @Test
     public void formatTasksOn_noMatchingDate_emptyStringReturned() throws ZuccException {
         TaskList scheduledTasks = new TaskList(List.of(
@@ -122,6 +168,9 @@ public class TaskListTest {
         assertEquals("", scheduledTasks.formatTasksOn(LocalDate.of(2026, 9, 11)));
     }
 
+    /**
+     * Verifies that multiple tasks are formatted as a one-based numbered list.
+     */
     @Test
     public void formatTasksContaining_matchingKeyword_onlyDescriptionsWithOriginalNumbersReturned()
             throws ZuccException {
