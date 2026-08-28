@@ -20,9 +20,9 @@ public final class OnCommand extends Command {
     /**
      * Finds and displays tasks scheduled on this command's date.
      *
-     * @param tasks task collection to search
-     * @param ui user interface through which the result is shown
-     * @param storage persistent storage; unchanged by this command
+     * @param tasks task collection to search.
+     * @param ui user interface through which the result is shown.
+     * @param storage persistent storage; unchanged by this command.
      */
     @Override
     public void execute(TaskList tasks, Ui ui, Storage storage) throws ZuccException {

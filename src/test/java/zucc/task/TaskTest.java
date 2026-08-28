@@ -19,7 +19,7 @@ public class TaskTest {
     /**
      * Creates an incomplete to-do used by the task state-transition tests.
      *
-     * @throws ZuccException if the valid task fixture cannot be created
+     * @throws ZuccException if the valid task fixture cannot be created.
      */
     @BeforeEach
     public void setUp() throws ZuccException {
@@ -29,7 +29,7 @@ public class TaskTest {
     /**
      * Verifies that marking an incomplete task changes its status to done.
      *
-     * @throws ZuccException if the valid state transition cannot be completed
+     * @throws ZuccException if the valid state transition cannot be completed.
      */
     @Test
     public void markAsDone_incompleteTask_statusChangedToDone() throws ZuccException {
@@ -41,7 +41,7 @@ public class TaskTest {
     /**
      * Verifies that marking an already completed task is rejected.
      *
-     * @throws ZuccException if the fixture task cannot first be marked
+     * @throws ZuccException if the fixture task cannot first be marked.
      */
     @Test
     public void markAsDone_completedTask_exceptionThrown() throws ZuccException {
@@ -53,7 +53,7 @@ public class TaskTest {
     /**
      * Verifies that unmarking a completed task changes its status to incomplete.
      *
-     * @throws ZuccException if either valid state transition cannot be completed
+     * @throws ZuccException if either valid state transition cannot be completed.
      */
     @Test
     public void markAsNotDone_completedTask_statusChangedToIncomplete() throws ZuccException {
@@ -75,7 +75,7 @@ public class TaskTest {
     /**
      * Verifies that storage separators and escape characters are encoded safely.
      *
-     * @throws ZuccException if the valid task cannot be created or marked
+     * @throws ZuccException if the valid task cannot be created or marked.
      */
     @Test
     public void toStorageString_specialStorageCharacters_charactersEscaped()
@@ -91,7 +91,7 @@ public class TaskTest {
     /**
      * Verifies that every task subtype retains its type, data, and status after storage.
      *
-     * @throws ZuccException if a valid fixture cannot be created or reconstructed
+     * @throws ZuccException if a valid fixture cannot be created or reconstructed.
      */
     @Test
     public void storageRoundTrip_eachTaskType_dataAndStatusPreserved() throws ZuccException {
@@ -134,9 +134,9 @@ public class TaskTest {
     /**
      * Verifies that saving and loading one task preserves its concrete type and data.
      *
-     * @param original task to save and load
-     * @param expectedType concrete type expected after loading
-     * @throws ZuccException if the stored representation cannot be loaded
+     * @param original task to save and load.
+     * @param expectedType concrete type expected after loading.
+     * @throws ZuccException if the stored representation cannot be loaded.
      */
     private void assertStorageRoundTrip(Task original, Class<? extends Task> expectedType)
             throws ZuccException {

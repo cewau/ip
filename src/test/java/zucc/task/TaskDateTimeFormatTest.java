@@ -18,7 +18,7 @@ public class TaskDateTimeFormatTest {
     /**
      * Verifies that a valid date and time with single-digit fields is parsed correctly.
      *
-     * @throws ZuccException if the valid date and time cannot be parsed
+     * @throws ZuccException if the valid date and time cannot be parsed.
      */
     @Test
     public void parse_validSingleDigitDateTime_parsedValueReturned() throws ZuccException {
@@ -30,7 +30,7 @@ public class TaskDateTimeFormatTest {
     /**
      * Verifies that a valid leap-day date and time is parsed correctly.
      *
-     * @throws ZuccException if the valid leap-day value cannot be parsed
+     * @throws ZuccException if the valid leap-day value cannot be parsed.
      */
     @Test
     public void parse_validLeapDay_parsedValueReturned() throws ZuccException {
@@ -58,7 +58,7 @@ public class TaskDateTimeFormatTest {
     /**
      * Verifies that a valid date without a time is parsed correctly.
      *
-     * @throws ZuccException if the valid date cannot be parsed
+     * @throws ZuccException if the valid date cannot be parsed.
      */
     @Test
     public void parseDate_validDate_parsedValueReturned() throws ZuccException {

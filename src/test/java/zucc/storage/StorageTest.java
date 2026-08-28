@@ -31,7 +31,7 @@ public class StorageTest {
     /**
      * Verifies that loading from a nonexistent file produces an empty task list.
      *
-     * @throws ZuccException if storage cannot handle the missing file
+     * @throws ZuccException if storage cannot handle the missing file.
      */
     @Test
     public void loadTasks_fileDoesNotExist_emptyListReturned() throws ZuccException {
@@ -45,7 +45,7 @@ public class StorageTest {
     /**
      * Verifies that saving and reloading preserves task order, data, and completion state.
      *
-     * @throws ZuccException if the valid tasks cannot be saved or loaded
+     * @throws ZuccException if the valid tasks cannot be saved or loaded.
      */
     @Test
     public void saveAndLoadTasks_validTasks_orderDataAndStatusPreserved()
@@ -73,8 +73,8 @@ public class StorageTest {
     /**
      * Verifies that saving creates missing parent directories and the task file.
      *
-     * @throws ZuccException if the task cannot be saved
-     * @throws IOException if the resulting task file cannot be inspected
+     * @throws ZuccException if the task cannot be saved.
+     * @throws IOException if the resulting task file cannot be inspected.
      */
     @Test
     public void saveTasks_parentDirectoriesMissing_directoriesAndFileCreated()
@@ -92,8 +92,8 @@ public class StorageTest {
     /**
      * Verifies that saving an empty collection clears an existing task file.
      *
-     * @throws ZuccException if the empty collection cannot be saved or loaded
-     * @throws IOException if the task file cannot be prepared or inspected
+     * @throws ZuccException if the empty collection cannot be saved or loaded.
+     * @throws IOException if the task file cannot be prepared or inspected.
      */
     @Test
     public void saveTasks_emptyTaskList_existingFileCleared()
@@ -114,7 +114,7 @@ public class StorageTest {
     /**
      * Verifies that Unicode characters survive a complete save-and-load cycle.
      *
-     * @throws ZuccException if the valid task cannot be saved or loaded
+     * @throws ZuccException if the valid task cannot be saved or loaded.
      */
     @Test
     public void saveAndLoadTasks_unicodeDescription_textPreserved()
@@ -131,7 +131,7 @@ public class StorageTest {
     /**
      * Verifies that invalid stored data reports its line number and underlying cause.
      *
-     * @throws IOException if the invalid test data cannot be written
+     * @throws IOException if the invalid test data cannot be written.
      */
     @Test
     public void loadTasks_invalidSecondLine_exceptionIdentifiesLineAndCause()
@@ -167,7 +167,7 @@ public class StorageTest {
     /**
      * Verifies that attempting to save tasks to a directory reports an I/O failure.
      *
-     * @throws ZuccException if the valid test task cannot be created
+     * @throws ZuccException if the valid test task cannot be created.
      */
     @Test
     public void saveTasks_pathIsDirectory_exceptionThrown() throws ZuccException {

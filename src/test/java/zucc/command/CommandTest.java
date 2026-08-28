@@ -48,7 +48,7 @@ public class CommandTest {
     /**
      * Verifies that parsing preserves repeated spaces within a to-do description.
      *
-     * @throws ZuccException if the command or resulting task cannot be created
+     * @throws ZuccException if the command or resulting task cannot be created.
      */
     @Test
     public void parse_todoWithRepeatedSpaces_spacesPreservedInDescription()
@@ -62,7 +62,7 @@ public class CommandTest {
     /**
      * Verifies that a slash within an argument word remains part of the description.
      *
-     * @throws ZuccException if the command or resulting task cannot be created
+     * @throws ZuccException if the command or resulting task cannot be created.
      */
     @Test
     public void parse_slashInsideArgumentWord_slashPreservedInDescription()
@@ -79,7 +79,7 @@ public class CommandTest {
     /**
      * Verifies that a deadline command and its {@code /by} option create the expected task.
      *
-     * @throws ZuccException if the valid command or task cannot be created
+     * @throws ZuccException if the valid command or task cannot be created.
      */
     @Test
     public void parse_deadlineWithOption_taskCreated() throws ZuccException {
@@ -95,7 +95,7 @@ public class CommandTest {
     /**
      * Verifies that event options create the same task regardless of their input order.
      *
-     * @throws ZuccException if either valid command or task cannot be created
+     * @throws ZuccException if either valid command or task cannot be created.
      */
     @Test
     public void parse_eventOptionsInEitherOrder_tasksCreated() throws ZuccException {
@@ -131,7 +131,7 @@ public class CommandTest {
     /**
      * Verifies that task creation rejects commands missing required arguments or options.
      *
-     * @throws ZuccException if parsing fails before the missing values can be tested
+     * @throws ZuccException if parsing fails before the missing values can be tested.
      */
     @Test
     public void createTask_requiredArgumentOrOptionMissing_exceptionThrown()
@@ -153,7 +153,7 @@ public class CommandTest {
     /**
      * Verifies that a one-based task number is converted to its zero-based list index.
      *
-     * @throws ZuccException if the valid task number cannot be parsed
+     * @throws ZuccException if the valid task number cannot be parsed.
      */
     @Test
     public void parseTaskIndex_validOneBasedNumber_returnsZeroBasedIndex()
@@ -166,7 +166,7 @@ public class CommandTest {
     /**
      * Verifies that absent, nonnumeric, and overflowing task numbers are rejected.
      *
-     * @throws ZuccException if command creation fails before the task numbers can be tested
+     * @throws ZuccException if command creation fails before the task numbers can be tested.
      */
     @Test
     public void parseTaskIndex_missingMalformedOrTooLargeNumber_exceptionThrown()
@@ -185,7 +185,7 @@ public class CommandTest {
     /**
      * Verifies that a command which accepts no argument rejects unexpected text.
      *
-     * @throws ZuccException if command creation fails before validation can be tested
+     * @throws ZuccException if command creation fails before validation can be tested.
      */
     @Test
     public void requireNoArgument_argumentSupplied_exceptionThrown() throws ZuccException {
@@ -198,7 +198,7 @@ public class CommandTest {
     /**
      * Verifies that only the exit command reports that the application should stop.
      *
-     * @throws ZuccException if either valid command cannot be parsed
+     * @throws ZuccException if either valid command cannot be parsed.
      */
     @Test
     public void isExit_exitAndRegularCommands_returnsExpectedValues() throws ZuccException {

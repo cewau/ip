@@ -18,20 +18,20 @@ import zucc.ZuccException;
  * Tests event validation, date matching, persistence fields, and display formatting.
  */
 public class EventTest {
-    private static final String DESCRIPTION = "Attend software engineering workshop";
-    private static final String START = "10/6/2026 2300";
-    private static final String END = "12/6/2026 0100";
+    private static final String EVENT_DESCRIPTION = "Attend software engineering workshop";
+    private static final String EVENT_START = "10/6/2026 2300";
+    private static final String EVENT_END = "12/6/2026 0100";
 
     private Event multiDayEvent;
 
     /**
      * Creates a valid multi-day event used by the date-matching and formatting tests.
      *
-     * @throws ZuccException if the shared event fixture cannot be created
+     * @throws ZuccException if the shared event fixture cannot be created.
      */
     @BeforeEach
     public void setUp() throws ZuccException {
-        multiDayEvent = new Event(DESCRIPTION, START, END);
+        multiDayEvent = new Event(EVENT_DESCRIPTION, EVENT_START, EVENT_END);
     }
 
     /**
@@ -41,11 +41,11 @@ public class EventTest {
     public void constructor_nullOrBlankDescription_exceptionThrown() {
         assertAll(
                 () -> assertThrows(ZuccException.class,
-                        () -> new Event(null, START, END)),
+                        () -> new Event(null, EVENT_START, EVENT_END)),
                 () -> assertThrows(ZuccException.class,
-                        () -> new Event("", START, END)),
+                        () -> new Event("", EVENT_START, EVENT_END)),
                 () -> assertThrows(ZuccException.class,
-                        () -> new Event("   ", START, END)));
+                        () -> new Event("   ", EVENT_START, EVENT_END)));
     }
 
     /**
@@ -55,11 +55,11 @@ public class EventTest {
     public void constructor_nullOrBlankStart_exceptionThrown() {
         assertAll(
                 () -> assertThrows(ZuccException.class,
-                        () -> new Event(DESCRIPTION, null, END)),
+                        () -> new Event(EVENT_DESCRIPTION, null, EVENT_END)),
                 () -> assertThrows(ZuccException.class,
-                        () -> new Event(DESCRIPTION, "", END)),
+                        () -> new Event(EVENT_DESCRIPTION, "", EVENT_END)),
                 () -> assertThrows(ZuccException.class,
-                        () -> new Event(DESCRIPTION, "   ", END)));
+                        () -> new Event(EVENT_DESCRIPTION, "   ", EVENT_END)));
     }
 
     /**
@@ -69,11 +69,11 @@ public class EventTest {
     public void constructor_nullOrBlankEnd_exceptionThrown() {
         assertAll(
                 () -> assertThrows(ZuccException.class,
-                        () -> new Event(DESCRIPTION, START, null)),
+                        () -> new Event(EVENT_DESCRIPTION, EVENT_START, null)),
                 () -> assertThrows(ZuccException.class,
-                        () -> new Event(DESCRIPTION, START, "")),
+                        () -> new Event(EVENT_DESCRIPTION, EVENT_START, "")),
                 () -> assertThrows(ZuccException.class,
-                        () -> new Event(DESCRIPTION, START, "   ")));
+                        () -> new Event(EVENT_DESCRIPTION, EVENT_START, "   ")));
     }
 
     /**
@@ -82,7 +82,7 @@ public class EventTest {
     @Test
     public void constructor_malformedStart_exceptionThrown() {
         assertThrows(ZuccException.class,
-                () -> new Event(DESCRIPTION, "not a date", END));
+                () -> new Event(EVENT_DESCRIPTION, "not a date", EVENT_END));
     }
 
     /**
@@ -91,7 +91,7 @@ public class EventTest {
     @Test
     public void constructor_impossibleEndDate_exceptionThrown() {
         assertThrows(ZuccException.class,
-                () -> new Event(DESCRIPTION, START, "31/2/2027 1200"));
+                () -> new Event(EVENT_DESCRIPTION, EVENT_START, "31/2/2027 1200"));
     }
 
     /**
@@ -100,13 +100,13 @@ public class EventTest {
     @Test
     public void constructor_endBeforeStart_exceptionThrown() {
         assertThrows(ZuccException.class,
-                () -> new Event(DESCRIPTION, "12/6/2026 0100", "10/6/2026 2300"));
+                () -> new Event(EVENT_DESCRIPTION, "12/6/2026 0100", "10/6/2026 2300"));
     }
 
     /**
      * Verifies that an event may start and end at the same instant.
      *
-     * @throws ZuccException if the valid zero-duration event cannot be created
+     * @throws ZuccException if the valid zero-duration event cannot be created.
      */
     @Test
     public void constructor_sameStartAndEnd_eventCreated() throws ZuccException {
@@ -119,12 +119,12 @@ public class EventTest {
     /**
      * Verifies that valid decoded storage fields reconstruct the complete event state.
      *
-     * @throws ZuccException if the valid stored event cannot be reconstructed
+     * @throws ZuccException if the valid stored event cannot be reconstructed.
      */
     @Test
     public void storageConstructor_validFields_eventRestored() throws ZuccException {
-        Event restoredEvent = new Event(new String[]{
-            "E", "1", DESCRIPTION, START, END
+        Event restoredEvent = new Event(new String[] {
+            "E", "1", EVENT_DESCRIPTION, EVENT_START, EVENT_END
         });
 
         assertEquals(
@@ -142,10 +142,10 @@ public class EventTest {
                 () -> assertThrows(ZuccException.class,
                         () -> new Event((String[]) null)),
                 () -> assertThrows(ZuccException.class,
-                        () -> new Event(new String[]{"E", "0", DESCRIPTION, START})),
+                        () -> new Event(new String[] {"E", "0", EVENT_DESCRIPTION, EVENT_START})),
                 () -> assertThrows(ZuccException.class,
-                        () -> new Event(new String[]{
-                            "E", "0", DESCRIPTION, START, END, "extra"
+                        () -> new Event(new String[] {
+                            "E", "0", EVENT_DESCRIPTION, EVENT_START, EVENT_END, "extra"
                         })));
     }
 
@@ -155,7 +155,7 @@ public class EventTest {
     @Test
     public void storageConstructor_invalidCompletionStatus_exceptionThrown() {
         assertThrows(ZuccException.class,
-                () -> new Event(new String[]{"E", "done", DESCRIPTION, START, END}));
+                () -> new Event(new String[] {"E", "done", EVENT_DESCRIPTION, EVENT_START, EVENT_END}));
     }
 
     /**
@@ -164,8 +164,8 @@ public class EventTest {
     @Test
     public void storageConstructor_endBeforeStart_exceptionThrown() {
         assertThrows(ZuccException.class,
-                () -> new Event(new String[]{
-                    "E", "0", DESCRIPTION, "12/6/2026 0100", "10/6/2026 2300"
+                () -> new Event(new String[] {
+                    "E", "0", EVENT_DESCRIPTION, "12/6/2026 0100", "10/6/2026 2300"
                 }));
     }
 
@@ -212,7 +212,7 @@ public class EventTest {
     /**
      * Verifies that a same-day event occurs on its scheduled date.
      *
-     * @throws ZuccException if the valid same-day event cannot be created
+     * @throws ZuccException if the valid same-day event cannot be created.
      */
     @Test
     public void occursOn_sameDayEventDate_returnsTrue() throws ZuccException {
@@ -227,7 +227,7 @@ public class EventTest {
     /**
      * Verifies that an event spanning New Year occurs on dates in both calendar years.
      *
-     * @throws ZuccException if the valid cross-year event cannot be created
+     * @throws ZuccException if the valid cross-year event cannot be created.
      */
     @Test
     public void occursOn_eventSpanningYearBoundary_bothDatesReturnTrue()
@@ -248,7 +248,7 @@ public class EventTest {
     @Test
     public void getStorageFields_event_returnsTypeAndTimeRange() {
         assertArrayEquals(
-                new String[]{"E", "10/6/2026 2300", "12/6/2026 0100"},
+                new String[] {"E", "10/6/2026 2300", "12/6/2026 0100"},
                 multiDayEvent.getStorageFields());
     }
 
