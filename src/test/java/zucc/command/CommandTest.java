@@ -28,6 +28,7 @@ public class CommandTest {
                 () -> assertInstanceOf(EventCommand.class,
                         Command.parse("event meeting /from 1/9/2026 1800 /to 1/9/2026 1900")),
                 () -> assertInstanceOf(ListCommand.class, Command.parse("list")),
+                () -> assertInstanceOf(FindCommand.class, Command.parse("find book")),
                 () -> assertInstanceOf(OnCommand.class, Command.parse("on 1/9/2026")),
                 () -> assertInstanceOf(MarkCommand.class, Command.parse("mark 1")),
                 () -> assertInstanceOf(UnmarkCommand.class, Command.parse("unmark 1")),

@@ -169,6 +169,34 @@ public class TaskListTest {
     }
 
     /**
+     * Verifies that keyword filtering returns only matching tasks with their original numbers.
+     *
+     * @throws ZuccException if the valid task fixtures cannot be created or marked.
+     */
+    @Test
+    public void formatTasksContaining_matchingKeyword_onlyDescriptionsWithOriginalNumbersReturned()
+            throws ZuccException {
+        TaskList searchableTasks = new TaskList(List.of(
+                new Todo("Read book"),
+                new Deadline("Submit report", "10/9/2026 1200"),
+                new Deadline("Return book", "12/9/2026 1200")));
+        searchableTasks.mark(2);
+
+        assertEquals(
+                "1.[T][ ] Read book\n"
+                        + "3.[D][X] Return book (by: Sep 12 2026, 12:00PM)",
+                searchableTasks.formatTasksContaining("book"));
+    }
+
+    /**
+     * Verifies that keyword filtering returns an empty string when no task matches.
+     */
+    @Test
+    public void formatTasksContaining_noMatchingKeyword_emptyStringReturned() {
+        assertEquals("", tasks.formatTasksContaining("book"));
+    }
+
+    /**
      * Verifies that multiple tasks are formatted as a one-based numbered list.
      */
     @Test
