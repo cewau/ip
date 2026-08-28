@@ -28,6 +28,11 @@ public class StorageTest {
     @TempDir
     private Path temporaryDirectory;
 
+    /**
+     * Verifies that loading from a nonexistent file produces an empty task list.
+     *
+     * @throws ZuccException if storage cannot handle the missing file
+     */
     @Test
     public void loadTasks_fileDoesNotExist_emptyListReturned() throws ZuccException {
         Path taskFile = temporaryDirectory.resolve("missing.txt");
@@ -37,6 +42,11 @@ public class StorageTest {
         assertTrue(loadedTasks.isEmpty());
     }
 
+    /**
+     * Verifies that saving and reloading preserves task order, data, and completion state.
+     *
+     * @throws ZuccException if the valid tasks cannot be saved or loaded
+     */
     @Test
     public void saveAndLoadTasks_validTasks_orderDataAndStatusPreserved()
             throws ZuccException {
@@ -60,6 +70,12 @@ public class StorageTest {
                 loadedTasks.stream().map(Task::toStorageString).toList());
     }
 
+    /**
+     * Verifies that saving creates missing parent directories and the task file.
+     *
+     * @throws ZuccException if the task cannot be saved
+     * @throws IOException if the resulting task file cannot be inspected
+     */
     @Test
     public void saveTasks_parentDirectoriesMissing_directoriesAndFileCreated()
             throws ZuccException, IOException {
@@ -73,6 +89,12 @@ public class StorageTest {
                 Files.readAllLines(taskFile, StandardCharsets.UTF_8));
     }
 
+    /**
+     * Verifies that saving an empty collection clears an existing task file.
+     *
+     * @throws ZuccException if the empty collection cannot be saved or loaded
+     * @throws IOException if the task file cannot be prepared or inspected
+     */
     @Test
     public void saveTasks_emptyTaskList_existingFileCleared()
             throws ZuccException, IOException {
@@ -89,6 +111,11 @@ public class StorageTest {
         assertTrue(storage.loadTasks().isEmpty());
     }
 
+    /**
+     * Verifies that Unicode characters survive a complete save-and-load cycle.
+     *
+     * @throws ZuccException if the valid task cannot be saved or loaded
+     */
     @Test
     public void saveAndLoadTasks_unicodeDescription_textPreserved()
             throws ZuccException {
@@ -101,6 +128,11 @@ public class StorageTest {
         assertEquals("[T][ ] Réviser 日本語 🚀", loadedTasks.getFirst().toString());
     }
 
+    /**
+     * Verifies that invalid stored data reports its line number and underlying cause.
+     *
+     * @throws IOException if the invalid test data cannot be written
+     */
     @Test
     public void loadTasks_invalidSecondLine_exceptionIdentifiesLineAndCause()
             throws IOException {
@@ -120,6 +152,9 @@ public class StorageTest {
         assertInstanceOf(ZuccException.class, exception.getCause());
     }
 
+    /**
+     * Verifies that attempting to load tasks from a directory reports an I/O failure.
+     */
     @Test
     public void loadTasks_pathIsDirectory_exceptionThrown() {
         Storage storage = new Storage(temporaryDirectory);
@@ -129,6 +164,11 @@ public class StorageTest {
         assertInstanceOf(IOException.class, exception.getCause());
     }
 
+    /**
+     * Verifies that attempting to save tasks to a directory reports an I/O failure.
+     *
+     * @throws ZuccException if the valid test task cannot be created
+     */
     @Test
     public void saveTasks_pathIsDirectory_exceptionThrown() throws ZuccException {
         Storage storage = new Storage(temporaryDirectory);
