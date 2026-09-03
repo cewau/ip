@@ -12,15 +12,15 @@ public abstract class Task {
     /** Separator used between fields in one persistent task record. */
     static final String STORAGE_FIELD_SEPARATOR = " | ";
 
+    /** Error used when a base task is created without a description. */
+    private static final String MISSING_DESCRIPTION_ERROR =
+            "Zucc needs more data: give that task a description.";
+
     /** Description of the work to be completed. */
     protected String description;
 
     /** Whether this task has been completed. */
     protected boolean isDone;
-
-    /** Error used when a base task is created without a description. */
-    private static final String MISSING_DESCRIPTION_ERROR =
-            "Zucc needs more data: give that task a description.";
 
     /**
      * Creates an incomplete task with the given description.
