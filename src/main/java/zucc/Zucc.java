@@ -5,6 +5,7 @@ import java.nio.file.Path;
 import zucc.command.Command;
 import zucc.storage.Storage;
 import zucc.task.TaskList;
+import zucc.ui.TextUi;
 import zucc.ui.Ui;
 
 /**
@@ -21,6 +22,15 @@ public class Zucc {
     private final Storage storage;
 
     /**
+     * Creates a chatbot backed by the default task file.
+     *
+     * @throws ZuccException if existing task data cannot be loaded.
+     */
+    public Zucc() throws ZuccException {
+        this(TASK_FILE_PATH);
+    }
+
+    /**
      * Creates a chatbot whose state is backed by the given data file.
      *
      * @param taskFilePath file from which tasks are loaded and to which they are saved.
@@ -32,34 +42,46 @@ public class Zucc {
     }
 
     /**
-     * Greets the user and handles commands until input ends or the user enters {@code bye}.
+     * Greets a terminal user and handles commands until input ends or the user enters {@code bye}.
      *
-     * @param ui user interface for this interactive session.
+     * @param ui terminal user interface for this interactive session.
      */
-    public void run(Ui ui) {
+    public void run(TextUi ui) {
         ui.showGreeting();
 
         boolean isExit = false;
         while (!isExit && ui.hasNextCommand()) {
-            try {
-                Command command = Command.parse(ui.readCommand());
-                command.execute(tasks, ui, storage);
-                isExit = command.isExit();
-            } catch (ZuccException exception) {
-                ui.showMessage(exception.getMessage());
-            }
+            isExit = executeCommand(ui.readCommand(), ui);
         }
     }
 
     /**
-     * Creates the application's resources and starts Zucc.
+     * Parses and executes one command for an arbitrary user interface.
+     *
+     * @param input complete command entered by the user.
+     * @param ui user interface through which responses are shown.
+     * @return {@code true} if the command ends the current session.
+     */
+    public boolean executeCommand(String input, Ui ui) {
+        try {
+            Command command = Command.parse(input);
+            command.execute(tasks, ui, storage);
+            return command.isExit();
+        } catch (ZuccException exception) {
+            ui.showMessage(exception.getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * Starts the optional terminal interface.
      *
      * @param args command-line arguments; not used by this application.
      */
     public static void main(String[] args) {
-        try (Ui ui = new Ui()) {
+        try (TextUi ui = new TextUi()) {
             try {
-                new Zucc(TASK_FILE_PATH).run(ui);
+                new Zucc().run(ui);
             } catch (ZuccException exception) {
                 ui.showMessage(exception.getMessage());
             }
