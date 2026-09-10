@@ -92,6 +92,9 @@ public abstract class Command {
      * @throws ZuccException if the option was absent or blank.
      */
     protected final String require(String optionName) throws ZuccException {
+        // Subclasses must declare every option they require so the parser can accept it.
+        assert optionName != null && allowedOptions.contains(optionName)
+                : "Required option must be declared by the command: " + optionName;
         return requireValue(options.get(optionName), optionName);
     }
 
