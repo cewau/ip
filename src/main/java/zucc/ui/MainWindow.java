@@ -16,6 +16,9 @@ import zucc.Zucc;
  * Controls the main JavaFX window and presents Zucc's responses as a conversation.
  */
 public final class MainWindow extends Ui {
+    /** Scroll-pane position that reveals the most recent dialog. */
+    private static final double SCROLL_BOTTOM_POSITION = 1.0;
+
     @FXML
     private ScrollPane scrollPane;
 
@@ -43,7 +46,7 @@ public final class MainWindow extends Ui {
     @FXML
     private void initialize() {
         dialogContainer.heightProperty().addListener(
-                (observable, oldHeight, newHeight) -> scrollPane.setVvalue(1.0));
+                (observable, oldHeight, newHeight) -> scrollPane.setVvalue(SCROLL_BOTTOM_POSITION));
     }
 
     /**
