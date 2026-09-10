@@ -12,6 +12,12 @@ public abstract class Task {
     /** Separator used between fields in one persistent task record. */
     static final String STORAGE_FIELD_SEPARATOR = " | ";
 
+    /** Stored value representing a completed task. */
+    private static final String STORAGE_STATUS_DONE = "1";
+
+    /** Stored value representing an incomplete task. */
+    private static final String STORAGE_STATUS_NOT_DONE = "0";
+
     /** Error used when a base task is created without a description. */
     private static final String MISSING_DESCRIPTION_ERROR =
             "Zucc needs more data: give that task a description.";
@@ -42,9 +48,9 @@ public abstract class Task {
      */
     protected Task(String description, String status) throws ZuccException {
         this(description);
-        if ("1".equals(status)) {
+        if (STORAGE_STATUS_DONE.equals(status)) {
             isDone = true;
-        } else if (!"0".equals(status)) {
+        } else if (!STORAGE_STATUS_NOT_DONE.equals(status)) {
             throw new ZuccException("Invalid stored completion status.");
         }
     }
@@ -158,7 +164,7 @@ public abstract class Task {
         String[] storageFields = getStorageFields();
         StringBuilder line = new StringBuilder(storageFields[0])
                 .append(STORAGE_FIELD_SEPARATOR)
-                .append(isDone ? "1" : "0")
+                .append(isDone ? STORAGE_STATUS_DONE : STORAGE_STATUS_NOT_DONE)
                 .append(STORAGE_FIELD_SEPARATOR)
                 .append(encodeStorageField(description));
 
