@@ -7,8 +7,6 @@ import zucc.ZuccException;
 
 /**
  * Recognizes raw user input and populates the corresponding concrete command.
- * TODO: Deliberate whether parsing merits a separate class or should be nested
- * inside Command to keep command creation and parsing in one place.
  */
 final class Parser {
     /** Message used when the first word does not identify a supported command. */
@@ -33,32 +31,30 @@ final class Parser {
      */
     static Command parse(String input) throws ZuccException {
         String normalizedInput = input.strip();
-        Iterator<String> words = Arrays.asList(normalizedInput.split(" ", -1)).iterator();
-        Command command = createCommand(words.next());
+        Iterator<String> tokens = Arrays.asList(normalizedInput.split(" ", -1)).iterator();
+        Command command = createCommand(tokens.next());
+        populateCommand(command, tokens);
+        return command;
+    }
 
+    /**
+     * Populates a command's argument and named options from its remaining tokens.
+     *
+     * @param command command to populate.
+     * @param tokens tokens that follow the command keyword.
+     * @throws ZuccException if an option is unsupported or duplicated.
+     */
+    private static void populateCommand(Command command, Iterator<String> tokens)
+            throws ZuccException {
         String currentOption = null;
         StringBuilder currentValue = new StringBuilder();
         boolean hasValueTokens = false;
 
-        while (true) {
-            boolean isInputFinished = !words.hasNext();
-            String word = isInputFinished ? "" : words.next();
-            boolean isOption = !isInputFinished
-                    && word.startsWith("/")
-                    && word.length() > 1;
-
-            if (isInputFinished || isOption) {
-                String completedValue = currentValue.toString().strip();
-                if (currentOption == null) {
-                    command.setArgument(completedValue);
-                } else {
-                    command.addOption(currentOption, completedValue);
-                }
-
-                if (isInputFinished) {
-                    break;
-                }
-                currentOption = word;
+        while (tokens.hasNext()) {
+            String token = tokens.next();
+            if (isOption(token)) {
+                addValue(command, currentOption, currentValue);
+                currentOption = token;
                 currentValue.setLength(0);
                 hasValueTokens = false;
                 continue;
@@ -67,11 +63,39 @@ final class Parser {
             if (hasValueTokens) {
                 currentValue.append(' ');
             }
-            currentValue.append(word);
+            currentValue.append(token);
             hasValueTokens = true;
         }
 
-        return command;
+        addValue(command, currentOption, currentValue);
+    }
+
+    /**
+     * Reports whether a token starts a named command option.
+     *
+     * @param token token to inspect.
+     * @return {@code true} if the token contains a slash followed by an option name.
+     */
+    private static boolean isOption(String token) {
+        return token.startsWith("/") && token.length() > 1;
+    }
+
+    /**
+     * Adds a completed value as either the main argument or a named option.
+     *
+     * @param command command to populate.
+     * @param option option associated with the value, or {@code null} for the main argument.
+     * @param value accumulated raw value.
+     * @throws ZuccException if the option is unsupported or duplicated.
+     */
+    private static void addValue(Command command, String option, StringBuilder value)
+            throws ZuccException {
+        String completedValue = value.toString().strip();
+        if (option == null) {
+            command.setArgument(completedValue);
+        } else {
+            command.addOption(option, completedValue);
+        }
     }
 
     /**
