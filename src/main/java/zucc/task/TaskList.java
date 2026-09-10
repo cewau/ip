@@ -6,6 +6,8 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import zucc.ZuccException;
 
@@ -144,22 +146,10 @@ public final class TaskList implements Iterable<Task> {
      * @return matching tasks, one per line.
      */
     private String formatTasksMatching(Predicate<Task> condition) {
-        StringBuilder taskList = new StringBuilder();
-
-        for (int i = 0; i < tasks.size(); i++) {
-            Task task = tasks.get(i);
-            if (!condition.test(task)) {
-                continue;
-            }
-            if (!taskList.isEmpty()) {
-                taskList.append('\n');
-            }
-            taskList.append(i + 1)
-                    .append('.')
-                    .append(task);
-        }
-
-        return taskList.toString();
+        return IntStream.range(0, tasks.size())
+                .filter(i -> condition.test(tasks.get(i)))
+                .mapToObj(i -> (i + 1) + "." + tasks.get(i))
+                .collect(Collectors.joining("\n"));
     }
 
     /**
