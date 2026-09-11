@@ -31,16 +31,17 @@ public class Event extends Task {
      * Creates an incomplete event with the given description and time range.
      *
      * @param description description of the event.
-     * @param from start date and time in {@code d/M/yyyy HHmm} format.
-     * @param to end date and time in {@code d/M/yyyy HHmm} format.
+     * @param startDateTimeText start date and time in {@code d/M/yyyy HHmm} format.
+     * @param endDateTimeText end date and time in {@code d/M/yyyy HHmm} format.
      * @throws ZuccException if a required value or date range is invalid.
      */
-    public Event(String description, String from, String to) throws ZuccException {
+    public Event(String description, String startDateTimeText, String endDateTimeText)
+            throws ZuccException {
         super(requireNonBlank(description, INVALID_EVENT_ERROR));
         this.startDateTime = TaskDateTimeFormat.parse(
-                requireNonBlank(from, INVALID_EVENT_ERROR));
+                requireNonBlank(startDateTimeText, INVALID_EVENT_ERROR));
         this.endDateTime = TaskDateTimeFormat.parse(
-                requireNonBlank(to, INVALID_EVENT_ERROR));
+                requireNonBlank(endDateTimeText, INVALID_EVENT_ERROR));
         requireValidRange();
     }
 

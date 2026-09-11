@@ -10,6 +10,9 @@ import javafx.scene.layout.VBox;
  * Displays a single message with a speaker label and compact avatar.
  */
 public final class DialogBox extends HBox {
+    /** Maximum width that keeps long messages comfortable to read. */
+    private static final double MESSAGE_CARD_MAXIMUM_WIDTH = 520.0;
+
     /**
      * Creates a styled message row for one speaker.
      *
@@ -32,7 +35,7 @@ public final class DialogBox extends HBox {
 
         VBox messageCard = new VBox(speakerLabel, messageLabel);
         messageCard.getStyleClass().addAll("message-card", isUser ? "user-card" : "zucc-card");
-        messageCard.setMaxWidth(520.0);
+        messageCard.setMaxWidth(MESSAGE_CARD_MAXIMUM_WIDTH);
 
         Label avatarLabel = new Label(avatarText);
         avatarLabel.getStyleClass().add("avatar-text");
