@@ -42,6 +42,10 @@ public final class MainWindow extends Ui {
      */
     @FXML
     private void initialize() {
+        // FXMLLoader must inject every control before this controller becomes usable.
+        assert scrollPane != null && dialogContainer != null && userInput != null
+                && sendButton != null && statusLabel != null && statusDot != null
+                : "MainWindow.fxml must inject all required controls";
         dialogContainer.heightProperty().addListener(
                 (observable, oldHeight, newHeight) -> scrollPane.setVvalue(1.0));
     }

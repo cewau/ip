@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Predicate;
 
 import zucc.ZuccException;
@@ -29,6 +30,9 @@ public final class TaskList implements Iterable<Task> {
      * @param initialTasks tasks with which to initialize the list.
      */
     public TaskList(List<Task> initialTasks) {
+        // Loading supplies actual task objects; null is not an empty task list or a task placeholder.
+        assert initialTasks != null && initialTasks.stream().allMatch(Objects::nonNull)
+                : "Initial tasks must be a collection of constructed tasks";
         tasks = new ArrayList<>(initialTasks);
     }
 
@@ -38,6 +42,8 @@ public final class TaskList implements Iterable<Task> {
      * @param newTask task to add.
      */
     public void add(Task newTask) {
+        // Enforce the same collection invariant for every insertion, including command factories.
+        assert newTask != null : "Only constructed tasks may enter the task list";
         tasks.add(newTask);
     }
 

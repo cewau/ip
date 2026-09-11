@@ -1,6 +1,8 @@
 package zucc.task;
 
 import java.time.LocalDate;
+import java.util.Arrays;
+import java.util.Objects;
 import java.util.regex.Pattern;
 
 import zucc.ZuccException;
@@ -156,6 +158,12 @@ public abstract class Task {
      */
     public final String toStorageString() {
         String[] storageFields = getStorageFields();
+        // The shared serializer relies on every subtype supplying a type code first.
+        assert storageFields != null && storageFields.length > 0
+                && storageFields[0] != null && !storageFields[0].isBlank()
+                : "Task storage fields must begin with a type code";
+        // Validate subtype output at the boundary so encoding can assume actual field values.
+        assert Arrays.stream(storageFields).allMatch(Objects::nonNull) : "Task storage fields must not be null";
         StringBuilder line = new StringBuilder(storageFields[0])
                 .append(STORAGE_FIELD_SEPARATOR)
                 .append(isDone ? "1" : "0")
