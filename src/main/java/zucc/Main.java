@@ -41,6 +41,8 @@ public final class Main extends Application {
         FXMLLoader fxmlLoader = new FXMLLoader(viewUrl);
         Parent root = fxmlLoader.load();
         MainWindow mainWindow = fxmlLoader.getController();
+        // The bundled view must declare the controller that connects it to the application.
+        assert mainWindow != null : "MainWindow.fxml must declare its controller";
 
         Scene scene = new Scene(root, WINDOW_INITIAL_WIDTH, WINDOW_INITIAL_HEIGHT);
         URL styleUrl = Objects.requireNonNull(
