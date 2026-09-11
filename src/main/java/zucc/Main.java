@@ -16,10 +16,16 @@ import zucc.ui.MainWindow;
  */
 public final class Main extends Application {
     /** Initial width of the application window. */
-    private static final double WINDOW_WIDTH = 760.0;
+    private static final double WINDOW_INITIAL_WIDTH = 760.0;
 
     /** Initial height of the application window. */
-    private static final double WINDOW_HEIGHT = 720.0;
+    private static final double WINDOW_INITIAL_HEIGHT = 720.0;
+
+    /** Minimum width at which the application layout remains usable. */
+    private static final double WINDOW_MINIMUM_WIDTH = 560.0;
+
+    /** Minimum height at which the application layout remains usable. */
+    private static final double WINDOW_MINIMUM_HEIGHT = 600.0;
 
     /**
      * Loads the main view, connects it to Zucc, and displays the primary stage.
@@ -38,15 +44,15 @@ public final class Main extends Application {
         // The bundled view must declare the controller that connects it to the application.
         assert mainWindow != null : "MainWindow.fxml must declare its controller";
 
-        Scene scene = new Scene(root, WINDOW_WIDTH, WINDOW_HEIGHT);
+        Scene scene = new Scene(root, WINDOW_INITIAL_WIDTH, WINDOW_INITIAL_HEIGHT);
         URL styleUrl = Objects.requireNonNull(
                 Main.class.getResource("/styles/main.css"),
                 "main.css is missing");
         scene.getStylesheets().add(styleUrl.toExternalForm());
 
         stage.setTitle("Zucc");
-        stage.setMinWidth(560.0);
-        stage.setMinHeight(600.0);
+        stage.setMinWidth(WINDOW_MINIMUM_WIDTH);
+        stage.setMinHeight(WINDOW_MINIMUM_HEIGHT);
         stage.setScene(scene);
 
         try {

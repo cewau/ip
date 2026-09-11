@@ -24,13 +24,13 @@ public class Deadline extends Task {
      * Creates an incomplete deadline with the given description and due date.
      *
      * @param description description of the task.
-     * @param by due date and time in {@code d/M/yyyy HHmm} format.
+     * @param dueDateTimeText due date and time in {@code d/M/yyyy HHmm} format.
      * @throws ZuccException if the description is blank or the due date is invalid.
      */
-    public Deadline(String description, String by) throws ZuccException {
+    public Deadline(String description, String dueDateTimeText) throws ZuccException {
         super(requireNonBlank(description, INVALID_DEADLINE_ERROR));
         this.dueDateTime = TaskDateTimeFormat.parse(
-                requireNonBlank(by, INVALID_DEADLINE_ERROR));
+                requireNonBlank(dueDateTimeText, INVALID_DEADLINE_ERROR));
     }
 
     /**
