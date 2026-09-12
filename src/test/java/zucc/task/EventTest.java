@@ -124,11 +124,11 @@ public class EventTest {
     @Test
     public void storageConstructor_validFields_eventRestored() throws ZuccException {
         Event restoredEvent = new Event(new String[] {
-            "E", "1", EVENT_DESCRIPTION, EVENT_START, EVENT_END
+            "E", "1", "2", EVENT_DESCRIPTION, EVENT_START, EVENT_END
         });
 
         assertEquals(
-                "[E][X] Attend software engineering workshop "
+                "[E][X][P2] Attend software engineering workshop "
                         + "(from: Jun 10 2026, 11:00PM to: Jun 12 2026, 1:00AM)",
                 restoredEvent.toString());
     }
@@ -142,10 +142,12 @@ public class EventTest {
                 () -> assertThrows(ZuccException.class,
                         () -> new Event((String[]) null)),
                 () -> assertThrows(ZuccException.class,
-                        () -> new Event(new String[] {"E", "0", EVENT_DESCRIPTION, EVENT_START})),
+                        () -> new Event(new String[] {
+                            "E", "0", "0", EVENT_DESCRIPTION, EVENT_START
+                        })),
                 () -> assertThrows(ZuccException.class,
                         () -> new Event(new String[] {
-                            "E", "0", EVENT_DESCRIPTION, EVENT_START, EVENT_END, "extra"
+                            "E", "0", "0", EVENT_DESCRIPTION, EVENT_START, EVENT_END, "extra"
                         })));
     }
 
@@ -155,7 +157,9 @@ public class EventTest {
     @Test
     public void storageConstructor_invalidCompletionStatus_exceptionThrown() {
         assertThrows(ZuccException.class,
-                () -> new Event(new String[] {"E", "done", EVENT_DESCRIPTION, EVENT_START, EVENT_END}));
+                () -> new Event(new String[] {
+                    "E", "done", "0", EVENT_DESCRIPTION, EVENT_START, EVENT_END
+                }));
     }
 
     /**
@@ -165,7 +169,8 @@ public class EventTest {
     public void storageConstructor_endBeforeStart_exceptionThrown() {
         assertThrows(ZuccException.class,
                 () -> new Event(new String[] {
-                    "E", "0", EVENT_DESCRIPTION, "12/6/2026 0100", "10/6/2026 2300"
+                    "E", "0", "0", EVENT_DESCRIPTION,
+                    "12/6/2026 0100", "10/6/2026 2300"
                 }));
     }
 

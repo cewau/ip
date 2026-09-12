@@ -2,6 +2,7 @@ package zucc.command;
 
 import zucc.ZuccException;
 import zucc.task.Event;
+import zucc.task.Priority;
 import zucc.task.Task;
 
 /**
@@ -10,7 +11,7 @@ import zucc.task.Task;
 public final class EventCommand extends AddTaskCommand {
     /** Creates an event command awaiting values from Parser. */
     EventCommand() {
-        super("event", "/from", "/to");
+        super("event", "/from", "/to", "/priority");
     }
 
     /**
@@ -24,6 +25,7 @@ public final class EventCommand extends AddTaskCommand {
         return new Event(
                 requireArgument("a description"),
                 require("/from"),
-                require("/to"));
+                require("/to"),
+                Priority.fromUserInput(getOption("/priority")));
     }
 }

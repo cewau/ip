@@ -1,6 +1,7 @@
 package zucc.command;
 
 import zucc.ZuccException;
+import zucc.task.Priority;
 import zucc.task.Task;
 import zucc.task.Todo;
 
@@ -10,7 +11,7 @@ import zucc.task.Todo;
 public final class TodoCommand extends AddTaskCommand {
     /** Creates a to-do command awaiting values from Parser. */
     TodoCommand() {
-        super("todo");
+        super("todo", "/priority");
     }
 
     /**
@@ -21,6 +22,8 @@ public final class TodoCommand extends AddTaskCommand {
      */
     @Override
     protected Task createTask() throws ZuccException {
-        return new Todo(requireArgument("a description"));
+        return new Todo(
+                requireArgument("a description"),
+                Priority.fromUserInput(getOption("/priority")));
     }
 }

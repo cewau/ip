@@ -2,6 +2,7 @@ package zucc.command;
 
 import zucc.ZuccException;
 import zucc.task.Deadline;
+import zucc.task.Priority;
 import zucc.task.Task;
 
 /**
@@ -10,7 +11,7 @@ import zucc.task.Task;
 public final class DeadlineCommand extends AddTaskCommand {
     /** Creates a deadline command awaiting values from Parser. */
     DeadlineCommand() {
-        super("deadline", "/by");
+        super("deadline", "/by", "/priority");
     }
 
     /**
@@ -21,6 +22,9 @@ public final class DeadlineCommand extends AddTaskCommand {
      */
     @Override
     protected Task createTask() throws ZuccException {
-        return new Deadline(requireArgument("a description"), require("/by"));
+        return new Deadline(
+                requireArgument("a description"),
+                require("/by"),
+                Priority.fromUserInput(getOption("/priority")));
     }
 }

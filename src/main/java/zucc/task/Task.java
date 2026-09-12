@@ -8,7 +8,7 @@ import java.util.regex.Pattern;
 import zucc.ZuccException;
 
 /**
- * Represents a task and whether it has been completed.
+ * Represents the shared description, completion state, and priority of a task.
  */
 public abstract class Task {
     /** Separator used between fields in one persistent task record. */
@@ -27,6 +27,9 @@ public abstract class Task {
     /** Description of the work to be completed. */
     private final String description;
 
+    /** Importance assigned when this task was created. */
+    private final Priority priority;
+
     /** Whether this task has been completed. */
     private boolean isDone;
 
@@ -37,7 +40,19 @@ public abstract class Task {
      * @throws ZuccException if the description is blank.
      */
     public Task(String description) throws ZuccException {
+        this(description, Priority.NONE);
+    }
+
+    /**
+     * Creates an incomplete task with the given description and priority.
+     *
+     * @param description description of the task.
+     * @param priority importance assigned to the task.
+     * @throws ZuccException if the description is blank.
+     */
+    public Task(String description, Priority priority) throws ZuccException {
         this.description = requireNonBlank(description, MISSING_DESCRIPTION_ERROR);
+        this.priority = priority;
         this.isDone = false;
     }
 
@@ -46,10 +61,11 @@ public abstract class Task {
      *
      * @param description decoded task description.
      * @param status {@code 1} for done or {@code 0} for not done.
-     * @throws ZuccException if the description or completion status is invalid.
+     * @param priorityCode stored priority code.
+     * @throws ZuccException if a common task field is invalid.
      */
-    protected Task(String description, String status) throws ZuccException {
-        this(description);
+    protected Task(String description, String status, String priorityCode) throws ZuccException {
+        this(description, Priority.fromStorageCode(priorityCode));
         if (STORAGE_STATUS_DONE.equals(status)) {
             isDone = true;
         } else if (!STORAGE_STATUS_NOT_DONE.equals(status)) {
@@ -174,6 +190,8 @@ public abstract class Task {
                 .append(STORAGE_FIELD_SEPARATOR)
                 .append(isDone ? STORAGE_STATUS_DONE : STORAGE_STATUS_NOT_DONE)
                 .append(STORAGE_FIELD_SEPARATOR)
+                .append(priority.getStorageCode())
+                .append(STORAGE_FIELD_SEPARATOR)
                 .append(encodeStorageField(description));
 
         for (int i = 1; i < storageFields.length; i++) {
@@ -207,10 +225,13 @@ public abstract class Task {
     /**
      * Formats this task with its completion status.
      *
-     * @return the task in {@code [status] description} format.
+     * @return task status, optional priority marker, and description.
      */
     @Override
     public String toString() {
-        return "[" + getStatusIcon() + "] " + description;
+        String priorityMarker = priority == Priority.NONE
+                ? ""
+                : "[P" + priority.getStorageCode() + "]";
+        return "[" + getStatusIcon() + "]" + priorityMarker + " " + description;
     }
 }

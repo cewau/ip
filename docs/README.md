@@ -49,6 +49,27 @@ Here are the tasks on Dec 03 2019:
 ```
 
 
+## Assigning a priority
+
+Add the optional `/priority` field when creating any task. Zucc accepts the
+names `high`, `medium`, and `low`, or the corresponding levels `1`, `2`, and
+`3`. Priority 1 is the highest.
+
+Example:
+
+`todo review pull request /priority high`
+
+```
+[T][ ][P1] review pull request
+```
+
+The option also works with deadlines and events, and it may appear before or
+after their date options:
+
+`deadline submit report /priority 2 /by 2/12/2019 1800`
+
+If `/priority` is omitted, Zucc creates the task without a priority marker.
+
 ## Feature XYZ
 
 // Feature details

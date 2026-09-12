@@ -12,7 +12,7 @@ import zucc.task.Task;
 
 /**
  * Loads and saves Zucc's tasks in a small, readable text file.
- * Each line stores a type, completion flag, and the fields belonging to one task.
+ * Each line stores a type, completion flag, priority, and the fields belonging to one task.
  */
 public final class Storage {
     /** Location of the task data file, relative to the working directory. */

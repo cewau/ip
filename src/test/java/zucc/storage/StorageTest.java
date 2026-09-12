@@ -17,6 +17,7 @@ import org.junit.jupiter.api.io.TempDir;
 import zucc.ZuccException;
 import zucc.task.Deadline;
 import zucc.task.Event;
+import zucc.task.Priority;
 import zucc.task.Task;
 import zucc.task.TaskList;
 import zucc.task.Todo;
@@ -43,7 +44,7 @@ public class StorageTest {
     }
 
     /**
-     * Verifies that saving and reloading preserves task order, data, and completion state.
+     * Verifies that saving and reloading preserves task order, data, completion state, and priority.
      *
      * @throws ZuccException if the valid tasks cannot be saved or loaded.
      */
@@ -52,7 +53,8 @@ public class StorageTest {
             throws ZuccException {
         Path taskFile = temporaryDirectory.resolve("nested/data/tasks.txt");
         Storage storage = new Storage(taskFile);
-        Deadline deadline = new Deadline("Submit | report", "2/9/2026 1800");
+        Deadline deadline = new Deadline(
+                "Submit | report", "2/9/2026 1800", Priority.HIGH);
         deadline.markAsDone();
         TaskList originalTasks = new TaskList(List.of(
                 new Todo("Read chapter"),
@@ -64,9 +66,9 @@ public class StorageTest {
 
         assertEquals(
                 List.of(
-                        "T | 0 | Read chapter",
-                        "D | 1 | Submit %7C report | 2/9/2026 1800",
-                        "E | 0 | Workshop | 3/9/2026 0900 | 4/9/2026 1700"),
+                        "T | 0 | 0 | Read chapter",
+                        "D | 1 | 1 | Submit %7C report | 2/9/2026 1800",
+                        "E | 0 | 0 | Workshop | 3/9/2026 0900 | 4/9/2026 1700"),
                 loadedTasks.stream().map(Task::toStorageString).toList());
     }
 
@@ -85,7 +87,7 @@ public class StorageTest {
         storage.saveTasks(List.of(new Todo("Read chapter")));
 
         assertEquals(
-                List.of("T | 0 | Read chapter"),
+                List.of("T | 0 | 0 | Read chapter"),
                 Files.readAllLines(taskFile, StandardCharsets.UTF_8));
     }
 
@@ -139,7 +141,7 @@ public class StorageTest {
         Path taskFile = temporaryDirectory.resolve("tasks.txt");
         Files.write(
                 taskFile,
-                List.of("T | 0 | Read chapter", "X | 0 | invalid task"),
+                List.of("T | 0 | 0 | Read chapter", "X | 0 | invalid task"),
                 StandardCharsets.UTF_8);
         Storage storage = new Storage(taskFile);
 

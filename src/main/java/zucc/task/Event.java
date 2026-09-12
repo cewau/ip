@@ -37,7 +37,21 @@ public class Event extends Task {
      */
     public Event(String description, String startDateTimeText, String endDateTimeText)
             throws ZuccException {
-        super(requireNonBlank(description, INVALID_EVENT_ERROR));
+        this(description, startDateTimeText, endDateTimeText, Priority.NONE);
+    }
+
+    /**
+     * Creates an incomplete event with the given description, time range, and priority.
+     *
+     * @param description description of the event.
+     * @param startDateTimeText start date and time in {@code d/M/yyyy HHmm} format.
+     * @param endDateTimeText end date and time in {@code d/M/yyyy HHmm} format.
+     * @param priority importance assigned to the task.
+     * @throws ZuccException if a supplied value or the date range is invalid.
+     */
+    public Event(String description, String startDateTimeText, String endDateTimeText,
+            Priority priority) throws ZuccException {
+        super(requireNonBlank(description, INVALID_EVENT_ERROR), priority);
         this.startDateTime = TaskDateTimeFormat.parse(
                 requireNonBlank(startDateTimeText, INVALID_EVENT_ERROR));
         this.endDateTime = TaskDateTimeFormat.parse(
@@ -49,18 +63,18 @@ public class Event extends Task {
      * Reconstructs an event from decoded storage fields.
      * The field-count check runs before the superclass constructor so indexing is safe.
      *
-     * @param fields decoded type, status, description, start, and end.
+     * @param fields decoded type, status, priority, description, start, and end.
      * @throws ZuccException if the fields do not describe a valid event.
      */
     Event(String[] fields) throws ZuccException {
-        if (fields == null || fields.length != 5) {
+        if (fields == null || fields.length != 6) {
             throw new ZuccException("Invalid stored event.");
         }
-        super(fields[2], fields[1]);
+        super(fields[3], fields[1], fields[2]);
         this.startDateTime = TaskDateTimeFormat.parse(
-                requireNonBlank(fields[3], INVALID_EVENT_ERROR));
-        this.endDateTime = TaskDateTimeFormat.parse(
                 requireNonBlank(fields[4], INVALID_EVENT_ERROR));
+        this.endDateTime = TaskDateTimeFormat.parse(
+                requireNonBlank(fields[5], INVALID_EVENT_ERROR));
         requireValidRange();
     }
 

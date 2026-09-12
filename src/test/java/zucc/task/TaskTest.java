@@ -84,7 +84,7 @@ public class TaskTest {
         task.markAsDone();
 
         assertEquals(
-                "T | 1 | Compare A %7C B at 100%25 confidence",
+                "T | 1 | 0 | Compare A %7C B at 100%25 confidence",
                 task.toStorageString());
     }
 
@@ -95,16 +95,26 @@ public class TaskTest {
      */
     @Test
     public void storageRoundTrip_eachTaskType_dataAndStatusPreserved() throws ZuccException {
-        Todo todoTask = new Todo("Use literal %7C and | symbols");
-        Deadline deadlineTask = new Deadline("Submit report", "2/9/2026 1800");
+        Todo todoTask = new Todo("Use literal %7C and | symbols", Priority.HIGH);
+        Deadline deadlineTask = new Deadline(
+                "Submit report", "2/9/2026 1800", Priority.MEDIUM);
         Event eventTask = new Event(
-                "Attend workshop", "3/9/2026 0900", "4/9/2026 1700");
+                "Attend workshop", "3/9/2026 0900", "4/9/2026 1700", Priority.LOW);
         deadlineTask.markAsDone();
 
         assertAll(
                 () -> assertStorageRoundTrip(todoTask, Todo.class),
                 () -> assertStorageRoundTrip(deadlineTask, Deadline.class),
                 () -> assertStorageRoundTrip(eventTask, Event.class));
+    }
+
+    /**
+     * Verifies that an unsupported stored priority is rejected.
+     */
+    @Test
+    public void fromStorageString_invalidPriority_exceptionThrown() {
+        assertThrows(ZuccException.class,
+                () -> Task.fromStorageString("T | 0 | urgent | Read chapter"));
     }
 
     /**

@@ -22,21 +22,32 @@ public class Todo extends Task {
      * @throws ZuccException if the description is blank.
      */
     public Todo(String description) throws ZuccException {
-        super(requireNonBlank(description, INVALID_TODO_ERROR));
+        this(description, Priority.NONE);
+    }
+
+    /**
+     * Creates an incomplete to-do with the given description and priority.
+     *
+     * @param description description of the task.
+     * @param priority importance assigned to the task.
+     * @throws ZuccException if the description or priority is invalid.
+     */
+    public Todo(String description, Priority priority) throws ZuccException {
+        super(requireNonBlank(description, INVALID_TODO_ERROR), priority);
     }
 
     /**
      * Reconstructs a to-do from decoded storage fields.
      * The field-count check runs before the superclass constructor so indexing is safe.
      *
-     * @param fields decoded type, status, and description.
+     * @param fields decoded type, status, priority, and description.
      * @throws ZuccException if the fields do not describe a valid to-do.
      */
     Todo(String[] fields) throws ZuccException {
-        if (fields == null || fields.length != 3) {
+        if (fields == null || fields.length != 4) {
             throw new ZuccException("Invalid stored to-do.");
         }
-        super(fields[2], fields[1]);
+        super(fields[3], fields[1], fields[2]);
     }
 
     /**

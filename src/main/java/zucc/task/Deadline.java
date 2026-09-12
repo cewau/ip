@@ -28,7 +28,20 @@ public class Deadline extends Task {
      * @throws ZuccException if the description is blank or the due date is invalid.
      */
     public Deadline(String description, String dueDateTimeText) throws ZuccException {
-        super(requireNonBlank(description, INVALID_DEADLINE_ERROR));
+        this(description, dueDateTimeText, Priority.NONE);
+    }
+
+    /**
+     * Creates an incomplete deadline with the given description, due date, and priority.
+     *
+     * @param description description of the task.
+     * @param dueDateTimeText due date and time in {@code d/M/yyyy HHmm} format.
+     * @param priority importance assigned to the task.
+     * @throws ZuccException if a supplied value is invalid.
+     */
+    public Deadline(String description, String dueDateTimeText, Priority priority)
+            throws ZuccException {
+        super(requireNonBlank(description, INVALID_DEADLINE_ERROR), priority);
         this.dueDateTime = TaskDateTimeFormat.parse(
                 requireNonBlank(dueDateTimeText, INVALID_DEADLINE_ERROR));
     }
@@ -36,16 +49,16 @@ public class Deadline extends Task {
     /**
      * Reconstructs a deadline from decoded storage fields.
      *
-     * @param fields decoded type, status, description, and deadline.
+     * @param fields decoded type, status, priority, description, and deadline.
      * @throws ZuccException if the fields do not describe a valid deadline.
      */
     Deadline(String[] fields) throws ZuccException {
-        if (fields == null || fields.length != 4) {
+        if (fields == null || fields.length != 5) {
             throw new ZuccException("Invalid stored deadline.");
         }
-        super(fields[2], fields[1]);
+        super(fields[3], fields[1], fields[2]);
         this.dueDateTime = TaskDateTimeFormat.parse(
-                requireNonBlank(fields[3], INVALID_DEADLINE_ERROR));
+                requireNonBlank(fields[4], INVALID_DEADLINE_ERROR));
     }
 
     /**

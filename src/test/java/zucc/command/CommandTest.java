@@ -111,6 +111,67 @@ public class CommandTest {
     }
 
     /**
+     * Verifies that each add command accepts the shared optional priority in either notation.
+     *
+     * @throws ZuccException if a valid command or task cannot be created.
+     */
+    @Test
+    public void createTask_optionalPriority_priorityDisplayedForEveryTaskType()
+            throws ZuccException {
+        TodoCommand todo = assertInstanceOf(
+                TodoCommand.class,
+                Command.parse("todo read chapter /priority high"));
+        DeadlineCommand deadline = assertInstanceOf(
+                DeadlineCommand.class,
+                Command.parse("deadline submit /priority 2 /by 2/9/2026 1800"));
+        EventCommand event = assertInstanceOf(
+                EventCommand.class,
+                Command.parse(
+                        "event workshop /from 2/9/2026 1800 "
+                                + "/to 2/9/2026 2000 /priority low"));
+
+        assertAll(
+                () -> assertEquals("[T][ ][P1] read chapter", todo.createTask().toString()),
+                () -> assertEquals(
+                        "[D][ ][P2] submit (by: Sep 02 2026, 6:00PM)",
+                        deadline.createTask().toString()),
+                () -> assertEquals(
+                        "[E][ ][P3] workshop "
+                                + "(from: Sep 02 2026, 6:00PM to: Sep 02 2026, 8:00PM)",
+                        event.createTask().toString()));
+    }
+
+    /**
+     * Verifies that omitting priority preserves the original task display.
+     *
+     * @throws ZuccException if the valid command or task cannot be created.
+     */
+    @Test
+    public void createTask_priorityOmitted_taskHasNoPriorityMarker() throws ZuccException {
+        TodoCommand command = assertInstanceOf(
+                TodoCommand.class, Command.parse("todo read chapter"));
+
+        assertEquals("[T][ ] read chapter", command.createTask().toString());
+    }
+
+    /**
+     * Verifies that a blank or unsupported priority is rejected when the task is created.
+     *
+     * @throws ZuccException if parsing fails before priority validation.
+     */
+    @Test
+    public void createTask_invalidPriority_exceptionThrown() throws ZuccException {
+        TodoCommand blankPriority = assertInstanceOf(
+                TodoCommand.class, Command.parse("todo read /priority"));
+        TodoCommand unsupportedPriority = assertInstanceOf(
+                TodoCommand.class, Command.parse("todo read /priority urgent"));
+
+        assertAll(
+                () -> assertThrows(ZuccException.class, blankPriority::createTask),
+                () -> assertThrows(ZuccException.class, unsupportedPriority::createTask));
+    }
+
+    /**
      * Verifies that supplying the same named option twice is rejected.
      */
     @Test

@@ -95,7 +95,17 @@ public abstract class Command {
         // Subclasses must declare every option they require so the parser can accept it.
         assert optionName != null && allowedOptions.contains(optionName)
                 : "Required option must be declared by the command: " + optionName;
-        return requireValue(options.get(optionName), optionName);
+        return requireValue(getOption(optionName), optionName);
+    }
+
+    /**
+     * Returns a named value supplied to this command.
+     *
+     * @param optionName option separator.
+     * @return supplied value, or {@code null} when the option was omitted.
+     */
+    protected final String getOption(String optionName) {
+        return options.get(optionName);
     }
 
     /**
